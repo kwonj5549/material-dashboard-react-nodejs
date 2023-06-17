@@ -8,9 +8,9 @@ const router = express.Router();
 router.use(express.json());
 
 // Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
+import { Configuration, OpenAIApi } from "openai";
 
-const { Configuration, OpenAIApi } = require("openai");
-require('dotenv').config()
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });

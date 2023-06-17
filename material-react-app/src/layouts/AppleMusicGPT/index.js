@@ -29,14 +29,18 @@ import MDInput from "components/MDInput";
 
 import MDButton from "components/MDButton";
 
-import GPTService from 'services/gpt-service'
 const sendData = async () => {
 
-  const payload = {
-    text: "Make me a 5 song r and b playlist"
-  };
+  const payload = "Make me a 5 song r and b playlist";
+
   try {
-    const response = await GPTService.generate(payload);
+    const response = await fetch(`/generate-text`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt: payload }) 
+  });
     console.log(response); // Do something with the response
   } catch (error) {
     console.error(error);
