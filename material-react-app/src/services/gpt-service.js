@@ -1,12 +1,14 @@
 import HttpService from "./htttp.service";
 
-class gptService {
+class GPTService {
   // authEndpoint = process.env.API_URL;
 
   generate = async (payload) => {
-    const loginEndpoint = 'login';
-    return await HttpService.post(loginEndpoint, payload);
+    const generateEndpoint = 'generate-text';
+    return await HttpService.post(generateEndpoint, payload);
   };
+
+ 
 }
 
-export default new AuthService();
+export default new GPTService();

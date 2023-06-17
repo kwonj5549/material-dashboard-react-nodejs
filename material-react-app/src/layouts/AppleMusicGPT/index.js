@@ -29,7 +29,19 @@ import MDInput from "components/MDInput";
 
 import MDButton from "components/MDButton";
 
+import GPTService from 'services/gpt-service'
+const sendData = async () => {
 
+  const payload = {
+    text: "Make me a 5 song r and b playlist"
+  };
+  try {
+    const response = await GPTService.generate(payload);
+    console.log(response); // Do something with the response
+  } catch (error) {
+    console.error(error);
+  }
+};
 function AppleMusicGPT() {
 
 
@@ -48,7 +60,7 @@ function AppleMusicGPT() {
                   color="info"
                   fullWidth
                   type="button"
-                  onClick={handleLogOut}
+                  onClick={sendData}
                 >
                   Log Out
                 </MDButton>
@@ -66,8 +78,5 @@ function AppleMusicGPT() {
   );
 }
 
-const handleLogOut = async () => {
-  const response = await AuthService.logout();
-  authContext.logout();
-};
+
 export default AppleMusicGPT;

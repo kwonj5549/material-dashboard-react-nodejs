@@ -8,13 +8,13 @@ const router = express.Router();
 router.use(express.json());
 
 // Middleware to parse URL-encoded bodies
-router.use(express.urlencoded({ extended: true }));
-router.post("/login", async (req, res, next) => {
 
-  const { email, password } = req.body.data.attributes;
-  await loginRouteHandler(req, res, email, password);
+const { Configuration, OpenAIApi } = require("openai");
+require('dotenv').config()
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
 });
-
+const openai = new OpenAIApi(configuration);
 router.post('/generate-text', async (req, res) => {
     const sysprompt = "you are AI playlist generator";
     const userprompt = req.query.prompt || '';
@@ -36,3 +36,4 @@ router.post('/generate-text', async (req, res) => {
 });
 
 
+export default router;
