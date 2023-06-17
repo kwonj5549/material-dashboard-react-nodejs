@@ -27,7 +27,7 @@ import Footer from "examples/Footer";
 // Material Dashboard 2 React Components
 import MDInput from "components/MDInput";
 
-
+import MDButton from "components/MDButton";
 
 
 function AppleMusicGPT() {
@@ -42,7 +42,17 @@ function AppleMusicGPT() {
       <MDInput label="Enter Your Prompt" multiline rows={5} fullWidth/>
       </Grid>
       <Grid item xs={5}>
-      <MDInput label="Enter Your Prompt" multiline rows={5} fullWidth/>
+      <MDBox>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  onClick={handleLogOut}
+                >
+                  Log Out
+                </MDButton>
+              </MDBox>
       </Grid>
     </Grid>
         
@@ -56,4 +66,8 @@ function AppleMusicGPT() {
   );
 }
 
+const handleLogOut = async () => {
+  const response = await AuthService.logout();
+  authContext.logout();
+};
 export default AppleMusicGPT;
