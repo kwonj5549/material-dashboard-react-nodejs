@@ -23,11 +23,20 @@ import Icon from "@mui/material/Icon";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-
+import { makeStyles } from "@mui/styles";
 // Material Dashboard 2 React base styles
 import typography from "assets/theme/base/typography";
-
+const useStyles = makeStyles(() => ({
+  footer: {
+    position: 'fixed',
+    left: 270,
+    bottom: '2%',
+    width: '85%',
+    zIndex: 2
+  },
+}));
 function Footer({ company, links }) {
+  const classes = useStyles();
   const { href, name } = company;
   const { size } = typography;
 
@@ -44,6 +53,7 @@ function Footer({ company, links }) {
 
   return (
     <MDBox
+    className={classes.footer}
       width="100%"
       display="flex"
       flexDirection={{ xs: "column", lg: "row" }}

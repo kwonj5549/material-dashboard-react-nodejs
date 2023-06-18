@@ -38,7 +38,7 @@ function Login() {
 
   const [inputs, setInputs] = useState({
     email: "admin@jsonapi.com",
-    password: "secret",
+    password: "secrets!",
   });
 
   const [errors, setErrors] = useState({

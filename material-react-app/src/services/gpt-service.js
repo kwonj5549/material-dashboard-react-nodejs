@@ -3,9 +3,13 @@ import HttpService from "./htttp.service";
 class GPTService {
   // authEndpoint = process.env.API_URL;
 
-  generate = async (payload) => {
-    const generateEndpoint = 'generate-text';
-    return await HttpService.post(generateEndpoint, payload);
+  generateAppleMusic = async (payload) => {
+    const generateAppleMusicEndpoint = 'generate-AppleMusic';
+    return await HttpService.post(generateAppleMusicEndpoint, payload);
+  };
+  sendAppleMusic = async (payload) => {
+    const sendAppleMusicEndpoint = 'send-AppleMusic';
+    return await HttpService.post(sendAppleMusicEndpoint, payload);
   };
 
  
