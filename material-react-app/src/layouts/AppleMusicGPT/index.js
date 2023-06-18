@@ -42,6 +42,9 @@ import infinigptlogo from "assets/images/infinigptlogo.png"
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import CircularProgress from '@mui/material/CircularProgress';
+import TextField from "@mui/material/TextField";
+import Slider from "@mui/material/Slider";
+import Divider from "@mui/material/Divider";
 // Create a custom theme
 const theme = createTheme({
   components: {
@@ -93,6 +96,23 @@ function AppleMusicGPT() {
 
   const openAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(true);
   const closeAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(false);
+  const [ppenvalue, setppenValue] = useState(.7);
+  const [fpenvalue, setfpenValue] = useState(.7);
+  const handlefPenInputChange = (event) => {
+    setfpenValue(parseFloat(event.target.value));
+  };
+
+  const handlefPenSliderChange = (event, newValue) => {
+    setfpenValue(newValue);
+  };
+
+  const handlepPenInputChange = (event) => {
+    setppenValue(parseFloat(event.target.value));
+  };
+
+  const handlepPenSliderChange = (event, newValue) => {
+    setppenValue(newValue);
+  };
 
   const renderSuccessSnackbar = (
     <MDSnackbar
@@ -189,35 +209,31 @@ function AppleMusicGPT() {
     id: index,
     ...song
   })) : [];
+
+
+
   return (
     <DashboardLayout>
-      <DashboardNavbar />
-      
-      <div className={isLoading ? classesblur.blur : ''}>
-      <MDBox px={2} py={1}>
-        <Stack
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          spacing={0}
-        >
-         <MDBox 
-  sx={{ 
-    display:'flex',
-    justifyContent:'space-between',
-    alignItems:'center', // Add this line
-    width: '100%',
-    p: 1,
-    borderRadius: 1,
-    mb: 0,
-    ml:3,
-    pl:0
-  }}
->
+    <DashboardNavbar />
+    <div className={isLoading ? classesblur.blur : ''}>
+    <Grid container spacing={3}>
+  <Grid item xs={12}>
+    <MDBox 
+      sx={{ 
+        display:'flex',
+        justifyContent:'space-between',
+        alignItems:'center',
+        width: '100%',
+        p: 1,
+        borderRadius: 1,
+        mb: 0,
+        ml:3,
+        pl:0
+      }}
+    >
   <Typography variant="h2" align="left">Apple Music GPT</Typography>
   <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
     <img src={infinigptlogo} alt="Logo" style={{height: '50px', width: '50px'}} />
-    
     {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }}/> : <LinkOffIcon fontSize="large" style={{ color: 'red' }}/>}
     <img src={applemusicimg} alt="Logo" style={{height: '50px', width: '50px'}} />
     {linkState ? <MDButton
@@ -240,61 +256,141 @@ function AppleMusicGPT() {
                   Authenicate
                 </MDButton>}
   </div>
-</MDBox>
-          <Grid container spacing={3} pl={1}>
-            <Grid item xs={7}>
-              <MDInput
-               className={classes.input}
-                label="Enter Your Prompt"
-                multiline
-                rows={5}
-                fullWidth
-                value={input}
-                onChange={event => setInput(event.target.value)}
-               
-              />
-            </Grid>
-            <Grid item xs={5}>
-              <MDBox>
-                <MDButton
-                  variant="gradient"
-                  color="info"
-                  fullWidth
-                  type="button"
-                  
-                  onClick={linkState ? sendData: openAppleMusicGPTSnackbarUnauth}
-                  
-                >
-                  Generate
-                </MDButton>
-              </MDBox>
-             
-            </Grid>
+  </MDBox>
+  </Grid>
+  <Grid item xs={9}>
+    <MDInput
+      className={classes.input}
+      label="Enter Your Prompt"
+      multiline
+      rows={5}
+      fullWidth
+      value={input}
+      onChange={event => setInput(event.target.value)}
+    />
+  </Grid>
+  <Grid item xs={3}>
+    <MDBox>
+      <MDButton
+        variant="gradient"
+        color="info"
+        fullWidth
+        type="button"
+        onClick={linkState ? sendData: openAppleMusicGPTSnackbarUnauth}
+      >
+        Generate
+      </MDButton>
+    </MDBox>
+  </Grid>
+  <Grid item xs={7}>
 
-          </Grid>
+  <MDBox mt={5} sx={{display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto'}} p={2}>
+    <Typography variant="h2" align="left">Response</Typography>
+    {response && (
+      <ThemeProvider theme={theme}>
+        <DataGrid
+        sx={{width: '100%', height: '100%'}}
+          color='white'
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
+      </ThemeProvider>
+    )}
+  </MDBox>
+</Grid>
+<Grid item xs={5}>
+  <MDBox 
+    sx={{ 
+      p: 2,
+      mt: 5, // Add top margin
+      width: '100%',
+      height: '500px', // Set fixed height
+      borderRadius: '10px', 
+      backgroundColor: '#ffffff',
+      
+      display: 'flex', 
+      flexDirection: 'column', 
+      justifyContent: 'flex-start',
+      // Reduced gap for dividers
+    }}
+  >
+    <Typography variant="h2" align="left">Advanced</Typography>
+    <Divider />  {/* Divider line */}
+    <Typography variant="h6">Prompt:</Typography>
+    <TextField label="Text Input for Prompt" variant="outlined" sx={{ mb: 1 }} /> {/* Added bottom margin */}
+    <Divider />  {/* Divider line */}
+    
 
-          <MDBox>
-            {response && ( // Only render DataGrid if response exists
-            <ThemeProvider theme={theme}>
-              <DataGrid
-              color='white'
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-              />
-              </ThemeProvider>
-            )}
-          </MDBox>
-        </Stack>
-      
-      </MDBox>
-      
+    <Grid container direction="row" alignItems="center" spacing={2}>
+      <Grid item xs={3}>
+      <Typography variant="h6">Frequency Penalty:</Typography>
+      </Grid>
+      <Grid item xs={2}>
+      <TextField 
+  
+              variant="outlined" 
+              value={fpenvalue} 
+              onChange={handlefPenInputChange} 
+              type="number"
+              inputProps={{
+                step: 0.01,
+                min: 0,
+                max: 2,
+              }}/>
+      </Grid>
+      <Grid item xs={6}>
+      <Slider 
+              value={fpenvalue} 
+              onChange={handlefPenSliderChange} 
+              min={0} 
+              max={2} 
+              step={0.01} 
+              aria-label="Slider for Frequency Penalty"
+            />
+      </Grid>
+    </Grid>
+
+    <Divider />  {/* Divider line */}
+    <Grid container direction="row" alignItems="center" spacing={2}>
+      <Grid item xs={3}>
+      <Typography variant="h6">Presence Penalty:</Typography>
+      </Grid>
+      <Grid item xs={2}>
+      <TextField 
+  
+              variant="outlined" 
+              value={ppenvalue} 
+              onChange={handlepPenInputChange} 
+              type="number"
+              inputProps={{
+                step: 0.01,
+                min: 0,
+                max: 2,
+              }}/>
+      </Grid>
+      <Grid item xs={6}>
+      <Slider 
+              value={ppenvalue} 
+              onChange={handlepPenSliderChange} 
+              min={0} 
+              max={2} 
+              step={0.01} 
+              aria-label="Slider for Frequency Penalty"
+            />
+      </Grid>
+    </Grid>
+
+    {/* Add more TextFields or Sliders as you need */}
+  </MDBox>
+</Grid>
+</Grid>
 </div>
 {isLoading && 
   <div style={{
