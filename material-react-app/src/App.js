@@ -45,8 +45,8 @@ import ResetPassword from "auth/reset-password";
 import Login from "auth/login";
 import Register from "auth/register";
 import { AuthContext } from "context";
-
-
+import { MusicKitContext } from 'context/index.js';
+import { MusicKitProvider } from 'context/index.js'
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -120,6 +120,7 @@ export default function App() {
   }, [pathname]);
 
   const getRoutes = (allRoutes) =>
+  
     allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
@@ -141,6 +142,8 @@ export default function App() {
       }
       return null;
     });
+
+  
 
   const configsButton = (
     <MDBox
@@ -167,7 +170,11 @@ export default function App() {
   );
 
   return (
+    
     <>
+    <MusicKitProvider>
+        {/* Rest of your app components */}
+      
       {isDemo}
       {direction === "rtl" ? (
         <CacheProvider value={rtlCache}>
@@ -226,6 +233,8 @@ export default function App() {
           </Routes>
         </ThemeProvider>
       )}
+      </MusicKitProvider>
     </>
+    
   );
 }

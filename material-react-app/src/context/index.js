@@ -27,6 +27,43 @@ import { useLocation, useNavigate } from "react-router-dom";
 // Material Dashboard 2 React main context
 const MaterialUI = createContext();
 
+
+
+// Create Context
+export const MusicKitContext = createContext();
+
+// Create Provider
+export const MusicKitProvider = ({ children }) => {
+  
+  const [music, setMusic] = useState(null);
+  
+ 
+  
+  useEffect(() => {
+    if (window.MusicKit) {
+      const musicInstance = MusicKit.configure({
+        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg1NzgyNTk3LCJleHAiOjE3MDAxODI1OTd9.7gM5jQgJzD3pblvBf_3_lcwd6ztkhi9UMPtARs5J4h0ekEtbnz9XGEEVLkjGoRazUfqUMW314FZO7xA5kszcnQ',
+          app: {
+              name: 'My Cool Web App',
+              build: '1978.4.1',
+          },
+      }).then(musicInstance => {
+        setMusic(musicInstance);
+      }).catch(error => {
+        console.error('Error configuring MusicKit:', error);
+      });
+     
+    } else {
+      console.error('MusicKit is not available');
+    }
+  }, []);
+  return (
+    <MusicKitContext.Provider value={music}>
+      {children}
+    </MusicKitContext.Provider>
+  );
+};
+
 // authentication context
 export const AuthContext = createContext({
   isAuthenticated: false,

@@ -31,51 +31,33 @@ import MDButton from "components/MDButton";
 import GPTService from 'services/gpt-service';
 import Stack from '@mui/material/Stack';
 import { DataGrid } from '@mui/x-data-grid';
-
+import { createContext, useContext } from "react";
+import { MusicKitContext } from 'context/index.js';
 function AppleMusicGPT() {
   const [input, setInput] = useState("");
   const [response, setResponseData] = useState(null);
-  const [music, setMusic] = useState(null);  
-
+  // const [music, setMusic] = useState(null);  
+  const music = useContext(MusicKitContext);
   const handleAuthorize = () => {
-    try {
-      window.MusicKit.configure({
-        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3MDEzODMyLCJleHAiOjE3MDE0MTM4MzJ9.dxtV-q4w9aJgAe5MqaUeK5RbqcWYXVo6QT_MU1SA6gEx2gNscENfuhq6QajgnMV-yqYq4P2QmwJUnIgpNcGxAw',
-        app: {
-          name: 'My Cool Web App',
-          build: '1978.4.1',
-        },
-      });
-
-      // store the instance in a state or in a React context
-    } catch (err) {
-      console.error('MusicKit configuration error:', err);
+    if (music) {
+      
+     
+    
+      music.authorize()
+        .then(() => {
+          console.log('User authorized');
+          console.log(music.musicUserToken);
+        })
+        .catch((error) => {
+          console.error('Authorization error:', error);
+        });
+      
+    } else {
+      console.log('MusicKit instance is not available');
     }
-    const music = MusicKit.getInstance();
-    music.authorize()
-      .then(() => {
-        console.log('User authorized');
-        console.log(music.musicUserToken);
-      })
-      .catch((error) => {
-        console.error('Authorization error:', error);
-      });
   };
   const handleUnauthorize = () =>{
-    try {
-      window.MusicKit.configure({
-        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3MDEzODMyLCJleHAiOjE3MDE0MTM4MzJ9.dxtV-q4w9aJgAe5MqaUeK5RbqcWYXVo6QT_MU1SA6gEx2gNscENfuhq6QajgnMV-yqYq4P2QmwJUnIgpNcGxAw',
-        app: {
-          name: 'My Cool Web App',
-          build: '1978.4.1',
-        },
-      });
 
-      // store the instance in a state or in a React context
-    } catch (err) {
-      console.error('MusicKit configuration error:', err);
-    }
-    const music = MusicKit.getInstance();
     music.unauthorize();
     console.log('User unauthorized');
   }
