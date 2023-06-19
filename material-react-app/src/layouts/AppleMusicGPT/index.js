@@ -32,7 +32,7 @@ import TextField from "@mui/material/TextField";
 import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
 
-import { AppBar, Tabs, Tab} from '@mui/material';
+import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
   components: {
@@ -64,9 +64,9 @@ const useBlurStyles = makeStyles((theme) => ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 9999
-    
+
   },
-  
+
 }));
 import Typography from '@mui/material/Typography';
 function AppleMusicGPT() {
@@ -180,7 +180,7 @@ function AppleMusicGPT() {
       setLinkState(false);
     }
   }, [music.musicUserToken]);
-  
+
   const sendData = async () => {
     setIsLoading(true);
 
@@ -190,19 +190,19 @@ function AppleMusicGPT() {
     };
 
     try {
- 
+
       const response = await GPTService.generateAppleMusic(JSON.stringify(payload));
-      
+
       setResponseData(response); // Do something with the response
       openAppleMusicGPTSnackbarSuccess();
       setInput("");
-      
+
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-   
+
 
   };
 
@@ -223,39 +223,40 @@ function AppleMusicGPT() {
 
   return (
     <DashboardLayout>
-    <DashboardNavbar />
-    <div className={isLoading ? classesblur.blur : ''}>
-    <Grid container spacing={3}>
-  <Grid item xs={12}>
-    <MDBox 
-      sx={{ 
-        display:'flex',
-        justifyContent:'space-between',
-        alignItems:'center',
-        width: '100%',
-        p: 1,
-        borderRadius: 1,
-        mb: 0,
-        ml:3,
-        pl:0
-      }}
-    >
-  <Typography variant="h2" align="left">Apple Music GPT</Typography>
-  <AppBar position="static">
-        <MDBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-          
-          <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
-            <Tab label="App" />
-            <Tab label="Message" />
-            <Tab label="Settings" />
-          </Tabs>
-        </MDBox>
-      </AppBar>
-  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-    <img src={infinigptlogo} alt="Logo" style={{height: '50px', width: '50px'}} />
-    {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }}/> : <LinkOffIcon fontSize="large" style={{ color: 'red' }}/>}
-    <img src={applemusicimg} alt="Logo" style={{height: '50px', width: '50px'}} />
-    {linkState ? <MDButton
+      <DashboardNavbar />
+      <div className={isLoading ? classesblur.blur : ''}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MDBox
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+                p: 1,
+                borderRadius: 1,
+                mb: 0,
+                ml: 3,
+                pl: 0
+              }}
+            >
+                <MDBox sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'left', p: 2,pl:0 }}>
+              <Typography sx={{pr:2}}variant="h2" align="left">Apple Music GPT</Typography>
+           
+              
+
+                  <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
+                    <Tab label="Basic" />
+                    <Tab label="Advanced" />
+                    <Tab label="History" />
+                  </Tabs>
+                </MDBox>
+      
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                <img src={infinigptlogo} alt="Logo" style={{ height: '50px', width: '50px' }} />
+                {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }} /> : <LinkOffIcon fontSize="large" style={{ color: 'red' }} />}
+                <img src={applemusicimg} alt="Logo" style={{ height: '50px', width: '50px' }} />
+                {linkState ? <MDButton
                   variant="gradient"
                   color="info"
                   fullWidth
@@ -264,7 +265,7 @@ function AppleMusicGPT() {
                   onClick={handleUnauthorize}
                 >
                   UnAuthenticate
-                </MDButton>:  <MDButton
+                </MDButton> : <MDButton
                   variant="gradient"
                   color="info"
                   fullWidth
@@ -274,224 +275,224 @@ function AppleMusicGPT() {
                 >
                   Authenicate
                 </MDButton>}
-  </div>
-  </MDBox>
-  </Grid>
-  <Grid item xs={9}>
-    <MDInput
-          className={classes.input}
-      label="Enter Your Prompt"
-      multiline
-      rows={5}
-      fullWidth
-      value={input}
-      onChange={event => setInput(event.target.value)}
-      
-    />
-  </Grid>
-  <Grid item xs={3}>
-    <MDBox>
-      <MDButton
-        variant="gradient"
-        color="info"
-        fullWidth
-        type="button"
-        onClick={linkState ? sendData: openAppleMusicGPTSnackbarUnauth}
-      >
-        Generate
-      </MDButton>
-    </MDBox>
-  </Grid>
-  <Grid item xs={7}>
+              </div>
+            </MDBox>
+          </Grid>
+          <Grid item xs={9}>
+            <MDInput
+              className={classes.input}
+              label="Enter Your Prompt"
+              multiline
+              rows={5}
+              fullWidth
+              value={input}
+              onChange={event => setInput(event.target.value)}
 
-  <MDBox mt={5} sx={{ boxShadow: theme.shadows[3], display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto'}} p={2}>
-    <Typography variant="h2" align="left">Response</Typography>
-    {response && (
-      <ThemeProvider theme={theme}>
-        <DataGrid
-        sx={{width: '100%', height: '100%'}}
-          color='white'
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-        />
-      </ThemeProvider>
-    )}
-  </MDBox>
-</Grid>
-<Grid item xs={5}>
-  <MDBox 
-    sx={{ 
-      p: 2,
-      mt: 5, // Add top margin
-      width: '100%',
-      height: '500px', // Set fixed height
-      borderRadius: '10px', 
-      backgroundColor: '#ffffff',
-      boxShadow: theme.shadows[3],
-      display: 'flex', 
-      flexDirection: 'column', 
-      justifyContent: 'flex-start',
-      // Reduced gap for dividers
-    }}
-  >
-    <Typography variant="h2" align="left">Advanced</Typography>
-    <Divider />  {/* Divider line */}
-    <Typography variant="h6">Prompt:</Typography>
-    <MDInput
-      className={classes.input}
-      label="Enter the default prompt"
-      multiline
-      rows={2}
-      fullWidth
-      value={advancedPromptInput}
-      onChange={event => setadvancedPromptInput(event.target.value)}
-    />
-    <Divider />  {/* Divider line */}
-    
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <MDBox>
+              <MDButton
+                variant="gradient"
+                color="info"
+                fullWidth
+                type="button"
+                onClick={linkState ? sendData : openAppleMusicGPTSnackbarUnauth}
+              >
+                Generate
+              </MDButton>
+            </MDBox>
+          </Grid>
+          <Grid item xs={7}>
 
-    <Grid container direction="row" alignItems="center" spacing={2}>
-      <Grid item xs={3}>
-      <Typography variant="h6">Frequency Penalty:</Typography>
-      </Grid>
-      <Grid item xs={2}>
-      <TextField 
-  
-              variant="outlined" 
-              value={fpenvalue} 
-              onChange={handlefPenInputChange} 
-              type="number"
-              inputProps={{
-                step: 0.01,
-                min: 0,
-                max: 2,
-              }}/>
-      </Grid>
-      <Grid item xs={6}>
-      <Slider 
-              value={fpenvalue} 
-              onChange={handlefPenSliderChange} 
-              min={0} 
-              max={2} 
-              step={0.01} 
-              aria-label="Slider for Frequency Penalty"
-            />
-      </Grid>
-    </Grid>
+            <MDBox mt={5} sx={{ boxShadow: theme.shadows[3], display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto' }} p={2}>
+              <Typography variant="h2" align="left">Response</Typography>
+              {response && (
+                <ThemeProvider theme={theme}>
+                  <DataGrid
+                    sx={{ width: '100%', height: '100%' }}
+                    color='white'
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                      pagination: {
+                        paginationModel: { page: 0, pageSize: 5 },
+                      },
+                    }}
+                    pageSizeOptions={[5, 10]}
+                    checkboxSelection
+                  />
+                </ThemeProvider>
+              )}
+            </MDBox>
+          </Grid>
+          <Grid item xs={5}>
+           {tabvalue == 1 && <MDBox
+              sx={{
+                p: 2,
+                mt: 5, // Add top margin
+                width: '100%',
+                height: '500px', // Set fixed height
+                borderRadius: '10px',
+                backgroundColor: '#ffffff',
+                boxShadow: theme.shadows[3],
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                // Reduced gap for dividers
+              }}
+            >
+              <Typography variant="h2" align="left">Advanced</Typography>
+              <Divider />  {/* Divider line */}
+              <Typography variant="h6">Prompt:</Typography>
+              <MDInput
+                className={classes.input}
+                label="Enter the default prompt"
+                multiline
+                rows={2}
+                fullWidth
+                value={advancedPromptInput}
+                onChange={event => setadvancedPromptInput(event.target.value)}
+              />
+              <Divider />  {/* Divider line */}
 
-    <Divider />  {/* Divider line */}
-    <Grid container direction="row" alignItems="center" spacing={2}>
-      <Grid item xs={3}>
-      <Typography variant="h6">Presence Penalty:</Typography>
-      </Grid>
-      <Grid item xs={2}>
-      <TextField 
-  
-              variant="outlined" 
-              value={ppenvalue} 
-              onChange={handlepPenInputChange} 
-              type="number"
-              inputProps={{
-                step: 0.01,
-                min: 0,
-                max: 2,
-              }}/>
-      </Grid>
-      <Grid item xs={6}>
-      <Slider 
-              value={ppenvalue} 
-              onChange={handlepPenSliderChange} 
-              min={0} 
-              max={2} 
-              step={0.01} 
-              aria-label="Slider for Presence Penalty"
-            />
-      </Grid>
-    </Grid>
-    <Divider />  {/* Divider line */}
-    <Grid container direction="row" alignItems="center" spacing={2}>
-      <Grid item xs={3}>
-      <Typography variant="h6">Temperature:</Typography>
-      </Grid>
-      <Grid item xs={2}>
-      <TextField 
-  
-              variant="outlined" 
-              value={tempvalue} 
-              onChange={handleTempInputChange} 
-              type="number"
-              inputProps={{
-                step: 0.01,
-                min: 0,
-                max: 2,
-              }}/>
-      </Grid>
-      <Grid item xs={6}>
-      <Slider 
-              value={tempvalue} 
-              onChange={handleTempSliderChange} 
-              min={0} 
-              max={2} 
-              step={0.01} 
-              aria-label="Slider for Temperature"
-            />
-      </Grid>
-    </Grid>
-    <Divider />  {/* Divider line */}
-    <Grid container direction="row" alignItems="center" spacing={2}>
-      <Grid item xs={3}>
-      <Typography variant="h6">Max Tokens:</Typography>
-      </Grid>
-      <Grid item xs={2}>
-      <TextField 
-  
-              variant="outlined" 
-              value={maxtokenvalue} 
-              onChange={handleMaxTokenInputChange} 
-              type="number"
-              inputProps={{
-                step: 1,
-                min: 1000,
-                max: 8000,
-              }}/>
-      </Grid>
-      <Grid item xs={6}>
-      <Slider 
-              value={maxtokenvalue} 
-              onChange={handleMaxTokenSliderChange} 
-              min={1000} 
-              max={8000} 
-              step={1} 
-              aria-label="Slider for Max Tokens"
-            />
-      </Grid>
-    </Grid>
-  </MDBox>
-</Grid>
-</Grid>
-</div>
-{isLoading && 
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: 9999
-  }}>
-    <CircularProgress />
-  </div>
-}
-{renderSuccessSnackbar}
-{renderUnauthSnackbar}
+
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                <Grid item xs={3}>
+                  <Typography variant="h6">Frequency Penalty:</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+
+                    variant="outlined"
+                    value={fpenvalue}
+                    onChange={handlefPenInputChange}
+                    type="number"
+                    inputProps={{
+                      step: 0.01,
+                      min: 0,
+                      max: 2,
+                    }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <Slider
+                    value={fpenvalue}
+                    onChange={handlefPenSliderChange}
+                    min={0}
+                    max={2}
+                    step={0.01}
+                    aria-label="Slider for Frequency Penalty"
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider />  {/* Divider line */}
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                <Grid item xs={3}>
+                  <Typography variant="h6">Presence Penalty:</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+
+                    variant="outlined"
+                    value={ppenvalue}
+                    onChange={handlepPenInputChange}
+                    type="number"
+                    inputProps={{
+                      step: 0.01,
+                      min: 0,
+                      max: 2,
+                    }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <Slider
+                    value={ppenvalue}
+                    onChange={handlepPenSliderChange}
+                    min={0}
+                    max={2}
+                    step={0.01}
+                    aria-label="Slider for Presence Penalty"
+                  />
+                </Grid>
+              </Grid>
+              <Divider />  {/* Divider line */}
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                <Grid item xs={3}>
+                  <Typography variant="h6">Temperature:</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+
+                    variant="outlined"
+                    value={tempvalue}
+                    onChange={handleTempInputChange}
+                    type="number"
+                    inputProps={{
+                      step: 0.01,
+                      min: 0,
+                      max: 2,
+                    }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <Slider
+                    value={tempvalue}
+                    onChange={handleTempSliderChange}
+                    min={0}
+                    max={2}
+                    step={0.01}
+                    aria-label="Slider for Temperature"
+                  />
+                </Grid>
+              </Grid>
+              <Divider />  {/* Divider line */}
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                <Grid item xs={3}>
+                  <Typography variant="h6">Max Tokens:</Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField
+
+                    variant="outlined"
+                    value={maxtokenvalue}
+                    onChange={handleMaxTokenInputChange}
+                    type="number"
+                    inputProps={{
+                      step: 1,
+                      min: 1000,
+                      max: 8000,
+                    }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <Slider
+                    value={maxtokenvalue}
+                    onChange={handleMaxTokenSliderChange}
+                    min={1000}
+                    max={8000}
+                    step={1}
+                    aria-label="Slider for Max Tokens"
+                  />
+                </Grid>
+              </Grid>
+            </MDBox>}
+          </Grid>
+        </Grid>
+      </div>
+      {isLoading &&
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 9999
+        }}>
+          <CircularProgress />
+        </div>
+      }
+      {renderSuccessSnackbar}
+      {renderUnauthSnackbar}
       <Footer />
     </DashboardLayout>
   );
