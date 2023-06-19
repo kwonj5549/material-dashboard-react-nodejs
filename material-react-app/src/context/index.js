@@ -39,7 +39,7 @@ export const MusicKitProvider = ({ children }) => {
  
   
   useEffect(() => {
-    if (window.MusicKit) {
+ 
       const musicInstance = MusicKit.configure({
         developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg1NzgyNTk3LCJleHAiOjE3MDAxODI1OTd9.7gM5jQgJzD3pblvBf_3_lcwd6ztkhi9UMPtARs5J4h0ekEtbnz9XGEEVLkjGoRazUfqUMW314FZO7xA5kszcnQ',
           app: {
@@ -51,10 +51,7 @@ export const MusicKitProvider = ({ children }) => {
       }).catch(error => {
         console.error('Error configuring MusicKit:', error);
       });
-     
-    } else {
-      console.error('MusicKit is not available');
-    }
+   
   }, []);
   return (
     <MusicKitContext.Provider value={music}>
@@ -72,30 +69,23 @@ export const AuthContext = createContext({
 });
 
 const AuthContextProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
 
   const navigate = useNavigate();
   const location = useLocation();
 
+
   const token = localStorage.getItem("token");
-
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(token));
   useEffect(() => {
-    if (!token) return;
-
-    setIsAuthenticated(true);
-    navigate(location.pathname);
-  }, []);
-
-  useEffect(() => {
-    if (!token) return;
-
-    setIsAuthenticated(isAuthenticated);
-    if (location.pathname === "/auth/login" || location.pathname === "/auth/register") {
+    if (isAuthenticated && (location.pathname === "/auth/login" || location.pathname === "/auth/register")) {
       navigate("/dashboard");
+    } else if (!isAuthenticated) {
+      navigate("/auth/login");
     } else {
       navigate(location.pathname);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname, navigate]);
 
   const login = (token) => {
     localStorage.setItem("token", token);

@@ -77,7 +77,7 @@ function AppleMusicGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-  const [advancedPromptInput, setadvancedPromptInput] = useState("${userprompt} make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist");
+  const [advancedPromptInput, setadvancedPromptInput] = useState("make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist");
   const openAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
@@ -174,19 +174,29 @@ function AppleMusicGPT() {
     console.log('User unauthorized');
   }
   useEffect(() => {
-    if (music.musicUserToken) {
+    if (music && music.musicUserToken) {
       setLinkState(true);
     } else {
       setLinkState(false);
     }
-  }, [music.musicUserToken]);
+}, [music?.musicUserToken]);
 
   const sendData = async () => {
     setIsLoading(true);
 
+    const advancedSettings = {
+      advancedPromptInput: advancedPromptInput,
+      frequencyPenalty: fpenvalue,
+      presencePenalty: ppenvalue,
+      maxTokens: maxtokenvalue,
+      temperature: tempvalue
+    };
+    
     const payload = {
       prompt: input,
-      musicUserToken: music.musicUserToken
+      musicUserToken: music.musicUserToken, 
+      useAdvancedSettings: tabvalue, 
+      advancedSettings:advancedSettings
     };
 
     try {
@@ -332,7 +342,7 @@ function AppleMusicGPT() {
                 p: 2,
                 mt: 5, // Add top margin
                 width: '100%',
-                height: '500px', // Set fixed height
+                height: '600px', // Set fixed height
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 boxShadow: theme.shadows[3],
@@ -342,18 +352,27 @@ function AppleMusicGPT() {
                 // Reduced gap for dividers
               }}
             >
+             
               <Typography variant="h2" align="left">Advanced</Typography>
               <Divider />  {/* Divider line */}
+              <MDBox 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start' 
+  }}
+>
               <Typography variant="h6">Prompt:</Typography>
               <MDInput
                 className={classes.input}
-                label="Enter the default prompt"
+                label="Enter the default prompt that goes after the user prompt"
                 multiline
                 rows={2}
                 fullWidth
                 value={advancedPromptInput}
                 onChange={event => setadvancedPromptInput(event.target.value)}
               />
+              </MDBox>
               <Divider />  {/* Divider line */}
 
 
@@ -493,7 +512,7 @@ function AppleMusicGPT() {
       }
       {renderSuccessSnackbar}
       {renderUnauthSnackbar}
-      <Footer />
+
     </DashboardLayout>
   );
 }

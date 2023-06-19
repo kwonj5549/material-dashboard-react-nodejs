@@ -1,6 +1,6 @@
 import express from "express";
-const app = express();
 
+import passport from "passport";
 // Middleware to parse JSON bodies
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(express.json());
 
 // Middleware to parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
+
 import { Configuration, OpenAIApi } from "openai";
 
 const configuration = new Configuration({
@@ -96,14 +96,28 @@ async function createPlaylistWithSongs(playlistName,trackIds,userToken) {
 }
    
 
-router.post('/generate-AppleMusic', async (req, res) => {
+router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false}), async (req, res) => {
     const sysprompt = "you are AI playlist generator";
 
     const userprompt = req.body.prompt || '';
     const appleMusicUserToken = req.body.musicUserToken
     console.log(sysprompt)
     console.log(userprompt)
-    const completion = await openai.createChatCompletion({
+    let completion;
+    if(req.body.useAdvancedSettings==1){
+    completion = await openai.createChatCompletion({
+        model: "gpt-4",
+        messages: [{ "role": "system", "content": sysprompt }, { "role": "user", "content": `${userprompt} ${req.body.advancedSettings.advancedPromptInput}` }],
+
+        max_tokens: req.body.advancedSettings.maxTokens,
+        n: 1,
+        temperature:  req.body.advancedSettings.temperature,
+        frequency_penalty: req.body.advancedSettings.frequencyPenalty,
+        presence_penalty: req.body.advancedSettings.presence,
+        top_p: 1
+    });
+}else{
+    completion = await openai.createChatCompletion({
         model: "gpt-4",
         messages: [{ "role": "system", "content": sysprompt }, { "role": "user", "content": `${userprompt} make the songs in this format 1. "song" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist` }],
 
@@ -114,6 +128,7 @@ router.post('/generate-AppleMusic', async (req, res) => {
         presence_penalty: 0.35,
         top_p: 1
     });
+}
     console.log(completion.data.choices[0].message.content);
     const generatedText = completion.data.choices[0].message.content;
 
@@ -122,7 +137,7 @@ router.post('/generate-AppleMusic', async (req, res) => {
 
     let lines = generatedText.split('\n');
 
-    let regexedLines = [];
+
 
     let playlist = {
         playlistName: "",
