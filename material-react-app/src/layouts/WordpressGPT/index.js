@@ -77,7 +77,7 @@ function WordpressGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-  const [advancedPromptInput, setadvancedPromptInput] = useState("${userprompt} make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist");
+  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this also add the korean translated version of the post below");
   const openWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
@@ -89,7 +89,8 @@ function WordpressGPT() {
   const [tempvalue, setTempValue] = useState(.7);
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
-
+  const [appPass, setappPassInput] = useState("");
+  const [WPusername, setWPusername] = useState("");
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -344,18 +345,63 @@ function WordpressGPT() {
             >
               <Typography variant="h2" align="left">Advanced</Typography>
               <Divider />  {/* Divider line */}
+              <MDBox 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start' 
+  }}
+>
               <Typography variant="h6">Prompt:</Typography>
               <MDInput
                 className={classes.input}
-                label="Enter the default prompt"
+                label="Enter the default prompt that goes after the user prompt"
                 multiline
                 rows={2}
                 fullWidth
                 value={advancedPromptInput}
-                onChange={event => setadvancedPromptInput(event.target.value)}
+                onChange={event => setWPusername(event.target.value)}
               />
+              </MDBox>
               <Divider />  {/* Divider line */}
-
+              <MDBox 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start' 
+  }}
+>
+              <Typography variant="h6">WP Username:</Typography>
+              <MDInput
+                className={classes.input}
+                label="Enter your username"
+                multiline
+                rows={1}
+                sx={{ width:"40%"}}
+                value={WPusername}
+                onChange={event => setappPassInput(event.target.value)}
+              />
+              </MDBox>
+              <Divider /> 
+              <MDBox 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start' 
+  }}
+>
+              <Typography variant="h6">Application Password:</Typography>
+              <MDInput
+                className={classes.input}
+                label="Enter your Application Password"
+                multiline
+                rows={1}
+                sx={{ width:"40%"}}
+                value={appPass}
+                onChange={event => setappPass(event.target.value)}
+              />
+              </MDBox>
+              <Divider /> 
 
               <Grid container direction="row" alignItems="center" spacing={2}>
                 <Grid item xs={3}>

@@ -43,7 +43,7 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import WordpressGPT from "layouts/WordpressGPT";
 import AppleMusicGPT from "layouts/AppleMusicGPT";
-
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 
 
@@ -63,7 +63,7 @@ const routes = [
     type: "collapse",
     name: "WordpressGPT",
     key: "WordpressGPT",
-    icon: <Icon fontSize="small">dashboard</Icon>,
+    icon: <EditNoteIcon fontSize="medium" />,
     route: "/WordpressGPT",
     component: <WordpressGPT />,
   },
