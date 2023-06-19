@@ -1,17 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -45,6 +31,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from "@mui/material/TextField";
 import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
+
+import { AppBar, Tabs, Tab} from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
   components: {
@@ -89,15 +77,22 @@ function AppleMusicGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-
+  const [advancedPromptInput, setadvancedPromptInput] = useState("${userprompt} make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist");
   const openAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
 
   const openAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(true);
   const closeAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(false);
-  const [ppenvalue, setppenValue] = useState(.7);
-  const [fpenvalue, setfpenValue] = useState(.7);
+  const [ppenvalue, setppenValue] = useState(.35);
+  const [fpenvalue, setfpenValue] = useState(0);
+  const [tempvalue, setTempValue] = useState(.7);
+  const [maxtokenvalue, setMaxTokenValue] = useState(4000);
+  const [tabvalue, setTabValue] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
   const handlefPenInputChange = (event) => {
     setfpenValue(parseFloat(event.target.value));
   };
@@ -112,6 +107,20 @@ function AppleMusicGPT() {
 
   const handlepPenSliderChange = (event, newValue) => {
     setppenValue(newValue);
+  };
+  const handleTempInputChange = (event) => {
+    setTempValue(parseFloat(event.target.value));
+  };
+
+  const handleTempSliderChange = (event, newValue) => {
+    setTempValue(newValue);
+  };
+  const handleMaxTokenInputChange = (event) => {
+    setMaxTokenValue(parseFloat(event.target.value));
+  };
+
+  const handleMaxTokenSliderChange = (event, newValue) => {
+    setMaxTokenValue(newValue);
   };
 
   const renderSuccessSnackbar = (
@@ -232,6 +241,16 @@ function AppleMusicGPT() {
       }}
     >
   <Typography variant="h2" align="left">Apple Music GPT</Typography>
+  <AppBar position="static">
+        <MDBox sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+          
+          <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
+            <Tab label="App" />
+            <Tab label="Message" />
+            <Tab label="Settings" />
+          </Tabs>
+        </MDBox>
+      </AppBar>
   <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
     <img src={infinigptlogo} alt="Logo" style={{height: '50px', width: '50px'}} />
     {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }}/> : <LinkOffIcon fontSize="large" style={{ color: 'red' }}/>}
@@ -260,13 +279,14 @@ function AppleMusicGPT() {
   </Grid>
   <Grid item xs={9}>
     <MDInput
-      className={classes.input}
+          className={classes.input}
       label="Enter Your Prompt"
       multiline
       rows={5}
       fullWidth
       value={input}
       onChange={event => setInput(event.target.value)}
+      
     />
   </Grid>
   <Grid item xs={3}>
@@ -284,7 +304,7 @@ function AppleMusicGPT() {
   </Grid>
   <Grid item xs={7}>
 
-  <MDBox mt={5} sx={{display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto'}} p={2}>
+  <MDBox mt={5} sx={{ boxShadow: theme.shadows[3], display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto'}} p={2}>
     <Typography variant="h2" align="left">Response</Typography>
     {response && (
       <ThemeProvider theme={theme}>
@@ -314,7 +334,7 @@ function AppleMusicGPT() {
       height: '500px', // Set fixed height
       borderRadius: '10px', 
       backgroundColor: '#ffffff',
-      
+      boxShadow: theme.shadows[3],
       display: 'flex', 
       flexDirection: 'column', 
       justifyContent: 'flex-start',
@@ -324,7 +344,15 @@ function AppleMusicGPT() {
     <Typography variant="h2" align="left">Advanced</Typography>
     <Divider />  {/* Divider line */}
     <Typography variant="h6">Prompt:</Typography>
-    <TextField label="Text Input for Prompt" variant="outlined" sx={{ mb: 1 }} /> {/* Added bottom margin */}
+    <MDInput
+      className={classes.input}
+      label="Enter the default prompt"
+      multiline
+      rows={2}
+      fullWidth
+      value={advancedPromptInput}
+      onChange={event => setadvancedPromptInput(event.target.value)}
+    />
     <Divider />  {/* Divider line */}
     
 
@@ -382,12 +410,68 @@ function AppleMusicGPT() {
               min={0} 
               max={2} 
               step={0.01} 
-              aria-label="Slider for Frequency Penalty"
+              aria-label="Slider for Presence Penalty"
             />
       </Grid>
     </Grid>
-
-    {/* Add more TextFields or Sliders as you need */}
+    <Divider />  {/* Divider line */}
+    <Grid container direction="row" alignItems="center" spacing={2}>
+      <Grid item xs={3}>
+      <Typography variant="h6">Temperature:</Typography>
+      </Grid>
+      <Grid item xs={2}>
+      <TextField 
+  
+              variant="outlined" 
+              value={tempvalue} 
+              onChange={handleTempInputChange} 
+              type="number"
+              inputProps={{
+                step: 0.01,
+                min: 0,
+                max: 2,
+              }}/>
+      </Grid>
+      <Grid item xs={6}>
+      <Slider 
+              value={tempvalue} 
+              onChange={handleTempSliderChange} 
+              min={0} 
+              max={2} 
+              step={0.01} 
+              aria-label="Slider for Temperature"
+            />
+      </Grid>
+    </Grid>
+    <Divider />  {/* Divider line */}
+    <Grid container direction="row" alignItems="center" spacing={2}>
+      <Grid item xs={3}>
+      <Typography variant="h6">Max Tokens:</Typography>
+      </Grid>
+      <Grid item xs={2}>
+      <TextField 
+  
+              variant="outlined" 
+              value={maxtokenvalue} 
+              onChange={handleMaxTokenInputChange} 
+              type="number"
+              inputProps={{
+                step: 1,
+                min: 1000,
+                max: 8000,
+              }}/>
+      </Grid>
+      <Grid item xs={6}>
+      <Slider 
+              value={maxtokenvalue} 
+              onChange={handleMaxTokenSliderChange} 
+              min={1000} 
+              max={8000} 
+              step={1} 
+              aria-label="Slider for Max Tokens"
+            />
+      </Grid>
+    </Grid>
   </MDBox>
 </Grid>
 </Grid>
