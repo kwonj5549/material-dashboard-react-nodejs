@@ -11,6 +11,10 @@ class GPTService {
     const sendAppleMusicEndpoint = 'send-AppleMusic';
     return await HttpService.post(sendAppleMusicEndpoint, payload);
   };
+  generateWordpress = async (payload) => {
+    const generateWordpressEndpoint = 'generate-Wordpress';
+    return await HttpService.post(generateWordpressEndpoint, payload);
+  };
 
  
 }

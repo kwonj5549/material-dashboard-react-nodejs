@@ -63,6 +63,7 @@ export const MusicKitProvider = ({ children }) => {
 // authentication context
 export const AuthContext = createContext({
   isAuthenticated: false,
+  user: null,
   login: () => {},
   register: () => {},
   logout: () => {},
@@ -73,11 +74,17 @@ const AuthContextProvider = ({ children }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [user, setUser] = useState(null);
 
   const token = localStorage.getItem("token");
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(token));
   useEffect(() => {
+    if (isAuthenticated) {
+      const storedUser = localStorage.getItem("user");
+      if(storedUser) {
+        setUser(JSON.parse(storedUser)); // Parse the stringified user object
+      }
+    }  
     if (isAuthenticated && (location.pathname === "/auth/login" || location.pathname === "/auth/register")) {
       navigate("/dashboard");
     } else if (!isAuthenticated) {
@@ -85,22 +92,26 @@ const AuthContextProvider = ({ children }) => {
     } else {
       navigate(location.pathname);
     }
-  }, [isAuthenticated, location.pathname, navigate]);
+  }, [isAuthenticated, location.pathname, navigate,setUser]);
 
-  const login = (token) => {
+  const login = (token,user) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
     setIsAuthenticated(true);
+    setUser(user);
     navigate("/dashboard");
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
+    setUser(null);
     navigate("/auth/login");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

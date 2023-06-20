@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import "./passport.js";
 import { dbConnect } from "./mongo";
-import { meRoutes, authRoutes,AMgptRoutes,WPgptroutes } from "./routes";
+import { meRoutes, authRoutes,AMgptRoutes,WPgptRoutes } from "./routes";
 import path from "path";
 import * as fs from "fs";
 import cron from "node-cron";

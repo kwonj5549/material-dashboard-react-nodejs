@@ -19,13 +19,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
-
+import jwt_decode from "jwt-decode";
 // Authentication layout components
 import BasicLayoutLanding from "layouts/authentication/components/BasicLayoutLanding";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
 import AuthService from "services/auth-service";
 import { AuthContext } from "context";
 
@@ -39,6 +38,7 @@ function Login() {
   const [inputs, setInputs] = useState({
     email: "admin@jsonapi.com",
     password: "secrets!",
+    name:'test'
   });
 
   const [errors, setErrors] = useState({
@@ -84,8 +84,14 @@ function Login() {
     };
 
     try {
+      let userData;
       const response = await AuthService.login(myData);
-      authContext.login(response.access_token, response.refresh_token);
+      
+      if(response&&response.access_token){
+        userData = jwt_decode(response.access_token);
+      }
+      console.log(userData);
+      authContext.login(response.access_token, userData);
     } catch (res) {
       if (res.hasOwnProperty("message")) {
         setCredentialsError(res.message);
