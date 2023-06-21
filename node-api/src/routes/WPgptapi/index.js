@@ -52,39 +52,7 @@ function extractTextBetweenDoubleBrackets(text) {
   
 
 
-  router.get('/wp-oauth/redirect', passport.authenticate('jwt', { session: false }),async (req, res) => {
-    const requestToken = req.query.code;
-    const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
   
-    try {
-        const data = {
-            grant_type: 'authorization_code',
-            code: requestToken,
-            redirect_uri: REDIRECT_URI,
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-        };
-        
-        const response = await fetch('https://public-api.wordpsress.com/oauth2/token', {
-            method: 'POST',
-            body: querystring.stringify(data),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-        });
-        
-        const json = await response.json();
-        const { access_token } = json;
-        
-        // save access_token to session, database, or send it to the client
-        // for this example let's send it back to the client
-        res.redirect(`http://localhost:3000/oauth-callback?access_token=${access_token}`);
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Error retrieving access token' });
-    }
-});
 router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
     
     const topics = req.body.prompt.split("\n");

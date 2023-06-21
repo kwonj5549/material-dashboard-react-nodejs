@@ -87,7 +87,7 @@ const AuthContextProvider = ({ children }) => {
     }  
     if (isAuthenticated && (location.pathname === "/auth/login" || location.pathname === "/auth/register")) {
       navigate("/dashboard");
-    } else if (!isAuthenticated && location.pathname !== "/auth/register" && location.pathname !== "/auth/forgotpassword") {
+    } else if (!isAuthenticated && location.pathname !== "/auth/register" && location.pathname !== "/auth/forgot-password") {
       navigate("/auth/login");
     } else {
       navigate(location.pathname);

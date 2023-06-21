@@ -155,7 +155,7 @@ function WordpressGPT() {
   );
   const music = useContext(MusicKitContext);
   const handleAuthorize = () => {
-    window.location.href = 'http://localhost:8080/wp-oauth/redirect'
+    
   };
   const handleUnauthorize = () => {
 
