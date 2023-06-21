@@ -21,7 +21,7 @@ import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import AuthService from "services/auth-service";
 import { AuthContext } from "context";
 import { InputLabel } from "@mui/material";
-
+import jwt_decode from "jwt-decode";
 function Register() {
   const authContext = useContext(AuthContext);
 
@@ -93,9 +93,13 @@ function Register() {
       },
     };
 
-    try {
+    try { 
+      let userData;
       const response = await AuthService.register(myData);
-      authContext.login(response.access_token, response.refresh_token);
+      if(response&&response.access_token){
+        userData = jwt_decode(response.access_token);
+      }
+      authContext.login(response.access_token, userData);
 
       setInputs({
         name: "",

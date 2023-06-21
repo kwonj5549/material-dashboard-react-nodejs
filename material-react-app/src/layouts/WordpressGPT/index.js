@@ -155,21 +155,7 @@ function WordpressGPT() {
   );
   const music = useContext(MusicKitContext);
   const handleAuthorize = () => {
-    if (music) {
-      music.authorize()
-        .then(() => {
-          console.log('User authorized');
-          setLinkState(true)
-          console.log(music.musicUserToken);
-
-        })
-        .catch((error) => {
-          console.error('Authorization error:', error);
-        });
-
-    } else {
-      console.log('MusicKit instance is not available');
-    }
+    window.location.href = 'http://localhost:8080/wp-oauth/redirect'
   };
   const handleUnauthorize = () => {
 
@@ -185,32 +171,42 @@ function WordpressGPT() {
     }
 }, [music?.musicUserToken]);
 
-  const sendData = async () => {
-    setIsLoading(true);
+const sendData = async () => {
+  setIsLoading(true);
 
-    const payload = {
-      prompt: input,
-      musicUserToken: music.musicUserToken
-    };
-
-    try {
-
-      const response = await GPTService.generateWordpress(JSON.stringify(payload));
-
-
-      setResponseData(response); // Do something with the response
-      setSelectedBlog(response[0]);
-      openWordpressGPTSnackbarSuccess();
-      setInput("");
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-
-
+  const advancedSettings = {
+    advancedPromptInput: advancedPromptInput,
+    frequencyPenalty: fpenvalue,
+    presencePenalty: ppenvalue,
+    maxTokens: maxtokenvalue,
+    temperature: tempvalue
   };
+  
+  const payload = {
+    prompt: input,
+    useAdvancedSettings: tabvalue, 
+    advancedSettings:advancedSettings
+    
+  };
+
+  try {
+
+    const response = await GPTService.generateWordpress(JSON.stringify(payload));
+    setSelectedBlog(response[0])
+    setResponseData(response); 
+   
+    console.log(selectedBlog)// Do something with the response
+    openAppleMusicGPTSnackbarSuccess();
+    setInput("");
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+
+
+};
 
 
 
@@ -312,7 +308,7 @@ function WordpressGPT() {
   p={2}
 >
   <Typography variant="h2" align="left">Response</Typography>
-  {response && (
+  {selectedBlog && response && (
     <Grid container spacing={3} direction="column" style={{ height: '100%' }}>
       <Grid item>
         <Select

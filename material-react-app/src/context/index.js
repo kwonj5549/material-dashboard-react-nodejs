@@ -39,7 +39,7 @@ export const MusicKitProvider = ({ children }) => {
  
   
   useEffect(() => {
- 
+ if(MusicKit){
       const musicInstance = MusicKit.configure({
         developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3Mjg2MTgxLCJleHAiOjE3MDE2ODYxODF9.bQ8nsMrBES7AI0o5RO29vCq-4m9SrwQrwQedtB6sqXXp6DP8akvQsoFXjAB4jrhAWGtj3nLeZiL6XElvd3FEBg',
           app: {
@@ -51,7 +51,7 @@ export const MusicKitProvider = ({ children }) => {
       }).catch(error => {
         console.error('Error configuring MusicKit:', error);
       });
-   
+    }
   }, []);
   return (
     <MusicKitContext.Provider value={music}>
@@ -87,7 +87,7 @@ const AuthContextProvider = ({ children }) => {
     }  
     if (isAuthenticated && (location.pathname === "/auth/login" || location.pathname === "/auth/register")) {
       navigate("/dashboard");
-    } else if (!isAuthenticated) {
+    } else if (!isAuthenticated && location.pathname !== "/auth/register" && location.pathname !== "/auth/forgotpassword") {
       navigate("/auth/login");
     } else {
       navigate(location.pathname);

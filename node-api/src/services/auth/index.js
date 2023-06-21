@@ -75,7 +75,7 @@ export const registerRouteHandler = async (req, res, name, email, password) => {
   await newUser.save();
 
   // Generate JWT token
-  const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: newUser.id, email: newUser.email,name:newUser.name}, process.env.JWT_SECRET, {
     expiresIn: "24h",
   });
   return res.status(200).json({

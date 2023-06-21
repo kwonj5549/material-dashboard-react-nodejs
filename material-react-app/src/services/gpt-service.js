@@ -16,7 +16,10 @@ class GPTService {
     return await HttpService.post(generateWordpressEndpoint, payload);
   };
 
- 
+  oauthWordpress = async (payload) => {
+    const oauthWordpressEndpoint = 'wp-oauth/redirect';
+    return await HttpService.post(oauthWordpressEndpoint, payload);
+  };
 }
 
 export default new GPTService();
