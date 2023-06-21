@@ -41,7 +41,7 @@ export const MusicKitProvider = ({ children }) => {
   useEffect(() => {
  
       const musicInstance = MusicKit.configure({
-        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg1NzgyNTk3LCJleHAiOjE3MDAxODI1OTd9.7gM5jQgJzD3pblvBf_3_lcwd6ztkhi9UMPtARs5J4h0ekEtbnz9XGEEVLkjGoRazUfqUMW314FZO7xA5kszcnQ',
+        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3Mjg2MTgxLCJleHAiOjE3MDE2ODYxODF9.bQ8nsMrBES7AI0o5RO29vCq-4m9SrwQrwQedtB6sqXXp6DP8akvQsoFXjAB4jrhAWGtj3nLeZiL6XElvd3FEBg',
           app: {
               name: 'My Cool Web App',
               build: '1978.4.1',

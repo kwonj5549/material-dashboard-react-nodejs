@@ -31,6 +31,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from "@mui/material/TextField";
 import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
@@ -77,10 +79,11 @@ function WordpressGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this also add the korean translated version of the post below");
+  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this");
   const openWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
 
   const openWordpressGPTSnackbarUnauth = () => setSnackbarUnauthOpen(true);
   const closeWordpressGPTSnackbarUnauth = () => setSnackbarUnauthOpen(false);
@@ -90,7 +93,7 @@ function WordpressGPT() {
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
   const [appPass, setappPassInput] = useState("");
-  const [WPusername, setWPusername] = useState("");
+  const [WPusername, setWPusernameInput] = useState("kwill5800");
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -192,9 +195,11 @@ function WordpressGPT() {
 
     try {
 
-      const response = await GPTService.generateAppleMusic(JSON.stringify(payload));
+      const response = await GPTService.generateWordpress(JSON.stringify(payload));
+
 
       setResponseData(response); // Do something with the response
+      setSelectedBlog(response[0]);
       openWordpressGPTSnackbarSuccess();
       setInput("");
 
@@ -206,19 +211,6 @@ function WordpressGPT() {
 
 
   };
-
-
-  const columns = [
-    { field: 'song', headerName: 'Song Name', width: 250 },
-    { field: 'artist', headerName: 'Artist', width: 250 },
-    { field: 'trackid', headerName: 'Track ID', width: 250 },
-  ];
-
-  // Ma to rows for DataGrid
-  const rows = response ? response.songs.map((song, index) => ({
-    id: index,
-    ...song
-  })) : [];
 
 
 
@@ -305,27 +297,57 @@ function WordpressGPT() {
             </MDBox>
           </Grid>
           <Grid item xs={7}>
-
-            <MDBox mt={5} sx={{ boxShadow: theme.shadows[3], display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto' }} p={2}>
-              <Typography variant="h2" align="left">Response</Typography>
-              {response && (
-                <ThemeProvider theme={theme}>
-                  <DataGrid
-                    sx={{ width: '100%', height: '100%' }}
-                    color='white'
-                    rows={rows}
-                    columns={columns}
-                    initialState={{
-                      pagination: {
-                        paginationModel: { page: 0, pageSize: 5 },
-                      },
-                    }}
-                    pageSizeOptions={[5, 10]}
-                    checkboxSelection
-                  />
-                </ThemeProvider>
-              )}
-            </MDBox>
+          <MDBox 
+  mt={5} 
+  sx={{ 
+    boxShadow: theme.shadows[3], 
+    display: 'flex', 
+    flexDirection: 'column', 
+    width: '100%', 
+    height: response ? '450px' : '80px', 
+    borderRadius: '10px', 
+    backgroundColor: '#ffffff', 
+    overflow: 'auto' 
+  }} 
+  p={2}
+>
+  <Typography variant="h2" align="left">Response</Typography>
+  {response && (
+    <Grid container spacing={3} direction="column" style={{ height: '100%' }}>
+      <Grid item>
+        <Select
+          value={selectedBlog}
+          onChange={event => setSelectedBlog(event.target.value)}
+        >
+          {response.map((blog, index) => (
+            <MenuItem value={blog} key={index}>
+              {blog.title}
+            </MenuItem>
+          ))}
+        </Select>
+      </Grid>
+      <Grid item>
+        <TextField
+          label="Title"
+          value={selectedBlog.title}
+          onChange={event => setSelectedBlog({...selectedBlog, title: event.target.value})}
+          fullWidth
+        />
+      </Grid>
+      <Grid item style={{ flexGrow: 1 }}>
+        <TextField
+          label="Content"
+          multiline
+          rows={10}
+          value={selectedBlog.content}
+          onChange={event => setSelectedBlog({...selectedBlog, content: event.target.value})}
+          style={{ height: '100%' }}
+          fullWidth
+        />
+      </Grid>
+    </Grid>
+  )}
+</MDBox>
           </Grid>
           <Grid item xs={5}>
            {tabvalue == 1 && <MDBox
@@ -360,7 +382,7 @@ function WordpressGPT() {
                 rows={2}
                 fullWidth
                 value={advancedPromptInput}
-                onChange={event => setWPusername(event.target.value)}
+                onChange={event => setadvancedPromptInput(event.target.value)}
               />
               </MDBox>
               <Divider />  {/* Divider line */}
@@ -379,7 +401,7 @@ function WordpressGPT() {
                 rows={1}
                 sx={{ width:"40%"}}
                 value={WPusername}
-                onChange={event => setappPassInput(event.target.value)}
+                onChange={event => setWPusernameInput(event.target.value)}
               />
               </MDBox>
               <Divider /> 
@@ -398,7 +420,7 @@ function WordpressGPT() {
                 rows={1}
                 sx={{ width:"40%"}}
                 value={appPass}
-                onChange={event => setappPass(event.target.value)}
+                onChange={event => setappPassInput(event.target.value)}
               />
               </MDBox>
               <Divider /> 

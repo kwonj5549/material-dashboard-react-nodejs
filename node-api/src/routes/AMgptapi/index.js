@@ -30,11 +30,14 @@ async function searchSong(songName, artistName) {
 
     try {
         const response = await fetch(`https://api.music.apple.com/v1/catalog/us/search?term=${encodeURIComponent(combinedSearchTerm)}&limit=1&types=songs`, requestOptions);
+   
         const result = await response.json();
+        
 
         if (result.results.songs && result.results.songs.data.length > 0) {
             const trackId = result.results.songs.data[0].id;
-            console.log('Track ID:', trackId);
+       
+
             return trackId;
 
         } else {
@@ -79,7 +82,7 @@ async function createPlaylistWithSongs(playlistName,trackIds,userToken) {
     try {
         const response = await fetch(`https://api.music.apple.com/v1/me/library/playlists`, requestOptionsCreatePlaylist);
         const result = await response.json();
-        console.log(result)
+        
         const playlistId = result.data[0].id;
         try {
             const response = await fetch(`https://api.music.apple.com/v1/me/library/playlists/${playlistId}/tracks`, requestOptionsAddSongs);
@@ -170,7 +173,9 @@ router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false})
             let song = match2[2].replace(/"/g, '');
             let artist = match2[4];
             console.log(`Song: ${song}, Artist: ${artist}`);
+        
             const trackId = await searchSong(song, artist);
+            console.log(trackId)
             if (trackId) {
                 playlist.songs.push({
                     song: song,

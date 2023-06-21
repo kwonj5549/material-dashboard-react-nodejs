@@ -15,115 +15,71 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+async function generateAdvancedBlogPost(topic,req) {
+const completion = await openai.createChatCompletion({
+    model: "gpt-4",
+    messages: [{ "role": "system", "content": "you are ai blog post generator" }, { "role": "user", "content": `Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this`  }],
 
-router.post('/generate-wordpress',passport.authenticate('jwt',{session: false}), async (req, res) => {
-    const sysprompt = "you are AI playlist generator";
-
-    const userprompt = req.body.prompt || '';
-    const appleMusicUserToken = req.body.musicUserToken
-    console.log(sysprompt)
-    console.log(userprompt)
-    let completion;
-    if(req.body.useAdvancedSettings==1){
-    completion = await openai.createChatCompletion({
-        model: "gpt-4",
-        messages: [{ "role": "system", "content": sysprompt }, { "role": "user", "content": `${userprompt} ${req.body.advancedSettings.advancedPromptInput}` }],
-
-        max_tokens: req.body.advancedSettings.maxTokens,
-        n: 1,
-        temperature:  req.body.advancedSettings.temperature,
-        frequency_penalty: req.body.advancedSettings.frequencyPenalty,
-        presence_penalty: req.body.advancedSettings.presence,
-        top_p: 1
-    });
-}else{
-    completion = await openai.createChatCompletion({
-        model: "gpt-4",
-        messages: [{ "role": "system", "content": sysprompt }, { "role": "user", "content": `${userprompt} make the songs in this format 1. "song" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist` }],
-
-        max_tokens: 4000,
-        n: 1,
-        temperature: 0.7,
-        frequency_penalty: 0,
-        presence_penalty: 0.35,
-        top_p: 1
-    });
+    max_tokens: req.body.advancedSettings.maxTokens,
+    n: 1,
+    temperature:  req.body.advancedSettings.temperature,
+    frequency_penalty: req.body.advancedSettings.frequencyPenalty,
+    presence_penalty: req.body.advancedSettings.presence,
+    top_p: 1
+});
+return completion;
 }
-    console.log(completion.data.choices[0].message.content);
-    const generatedText = completion.data.choices[0].message.content;
-
-    let pattern = /(\d+\.\s)(.*?)(\s-\s)(".*?")/;
-    let pattern2 = /(\d+\.\s)(".*?")(\sby\s)(.*)/;
-
-    let lines = generatedText.split('\n');
+async function generateBasicBlogPost(topic) {
+const completion = await openai.createChatCompletion({
+    model: "gpt-4",
+    messages: [{ "role": "system", "content": "you are ai blog post generator" }, { "role": "user", "content": `Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this`  }],
 
 
-
-    let playlist = {
-        playlistName: "",
-        songs: []
-    };
-    for (let line of lines) {
-        let match = line.match(pattern);
-        let match2 = line.match(pattern2);
-
-        const match3 = generatedText.match(/PlaylistName:\s*(.+)/);
-
-        if (match) {
-            let artist = match[2];
-            let song = match[4].replace(/"/g, '');
-            const trackId = await searchSong(song, artist);
-            if (trackId) {
-                playlist.songs.push({
-                    song: song,
-                    artist: artist,
-                    trackid: trackId
-
-                });
-            }
-            if (match3) {
-                playlist.playlistName = match3[1]
-
-            }
-        }
-        else if (match2) {
-            let song = match2[2].replace(/"/g, '');
-            let artist = match2[4];
-            console.log(`Song: ${song}, Artist: ${artist}`);
-            const trackId = await searchSong(song, artist);
-            if (trackId) {
-                playlist.songs.push({
-                    song: song,
-                    artist: artist,
-                    trackid: trackId
-
-                });
-            }
-            if (match3) {
-                playlist.playlistName = match3[1]
-
-            }
-        }
-    }
-
-    res.send(playlist);
-    const trackIds = playlist.songs.map(song => song.trackid);
-    if (trackIds.length > 0) {
-        if (playlist.playlistName){
-        await createPlaylistWithSongs(playlist.playlistName,trackIds,appleMusicUserToken);
-       
-        }
-        else{
-            await createPlaylistWithSongs("New Playlist",trackIds,appleMusicUserToken);
-       
-        }
-        
-        // res.json(addResult);
-    }
-    
+    max_tokens: 4000,
+    n: 1,
+    temperature: 0.7,
+    frequency_penalty: 0,
+    presence_penalty: 0.35,
+    top_p: 1
 });
-router.post('/send-AppleMusic', async (req, res) => {
-    
-});
+return completion;
+}
+
+function extractTextBetweenDoubleBrackets(text) {
+    const match = text.match(/\[\[(.*?)\]\]/);
+    return match ? match[1] : "New Post";
+  }
+  
+router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const topics = req.body.prompt.split("\n");
+    const tasks = topics.map(async topic => {
+      let completion;
+      if (req.body.useAdvancedSettings == 1) {
+        completion = await generateAdvancedBlogPost(topic,req);
+      } else {
+        completion = await generateBasicBlogPost(topic);
+      }
+  
+      console.log(completion.data.choices[0].message.content);
+      const generatedText = completion.data.choices[0].message.content;
+  
+      // Extract title and content
+      const title = extractTextBetweenDoubleBrackets(generatedText);
+      const content = generatedText.replace(/\[\[(.*?)\]\]/, "").replace(/content:/gi, "").trim(); // Remove the title and "content:" from the content // Remove the title from the content
+  
+      // Return the generated object
+      return {
+        title: title,
+        content: content,
+      };
+    });
+  
+    // Wait for all tasks to complete
+    let generations = await Promise.all(tasks);
+  
+    // Send the generations back as the response
+    res.json(generations);
+  });
+
 
 export default router;
