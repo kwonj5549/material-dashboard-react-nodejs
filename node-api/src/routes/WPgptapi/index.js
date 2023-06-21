@@ -10,7 +10,7 @@ router.use(express.json());
 // Middleware to parse URL-encoded bodies
 
 import { Configuration, OpenAIApi } from "openai";
-
+import base64 from 'base-64'; 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -50,8 +50,48 @@ function extractTextBetweenDoubleBrackets(text) {
     return match ? match[1] : "New Post";
   }
   
+
+
+  router.get('/wp-oauth/redirect', passport.authenticate('jwt', { session: false }),async (req, res) => {
+    const requestToken = req.query.code;
+    const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+  
+    try {
+        const data = {
+            grant_type: 'authorization_code',
+            code: requestToken,
+            redirect_uri: REDIRECT_URI,
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+        };
+        
+        const response = await fetch('https://public-api.wordpsress.com/oauth2/token', {
+            method: 'POST',
+            body: querystring.stringify(data),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+        });
+        
+        const json = await response.json();
+        const { access_token } = json;
+        
+        // save access_token to session, database, or send it to the client
+        // for this example let's send it back to the client
+        res.redirect(`http://localhost:3000/oauth-callback?access_token=${access_token}`);
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error retrieving access token' });
+    }
+});
 router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    
     const topics = req.body.prompt.split("\n");
+    const username = 'kwill5800';
+    const password = 'vime5rpyh6nc5koz';
+
+    const token = base64.encode(username + ':' + password);    
     const tasks = topics.map(async topic => {
       let completion;
       if (req.body.useAdvancedSettings == 1) {
@@ -76,9 +116,31 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
   
     // Wait for all tasks to complete
     let generations = await Promise.all(tasks);
-  
+    for(let post of generations) {
+        const requestOptionsWordpress = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`,
+            },
+            body: JSON.stringify({
+                // assuming "title" and "content" are correct properties for the WordPress API
+                title: post.title,
+                content: post.content,
+                status: 'publish' // if you want to auto-publish the post
+            })
+        };
+    
+        const response = await fetch("https://public-api.wordpress.com/wp/v2/sites/kwill5800440205732.wordpress.com/posts/", requestOptionsWordpress);
+        if(response.ok) {
+          console.log(`Posted "${post.title}" successfully!`);
+        } else {
+            console.log(response)
+          console.log(`Failed to post "${post.title}".`);
+        }
+      }
     // Send the generations back as the response
     res.json(generations);
+
   });
 
 
