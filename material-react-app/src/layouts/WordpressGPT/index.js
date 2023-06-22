@@ -138,7 +138,7 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
     const code = urlParams.get('code');
     const state = urlParams.get('state');
     const userId = JSON.parse(localStorage.getItem("user"));
-    // Check if the state value matches the user ID in the local storage
+    // Check if the state value mastches the user ID in the local storage
   
    
   
