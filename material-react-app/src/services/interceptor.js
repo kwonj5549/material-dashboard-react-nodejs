@@ -3,7 +3,13 @@ import HttpService from "./htttp.service";
 export const setupAxiosInterceptors = (onUnauthenticated) => {
   const onRequestSuccess = async (config) => {
     const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
     config.headers.Authorization = `Bearer ${token}`;
+    if(user){
+    config.headers.userId = user.id;
+    }
+     // adding userId to every request header
+
     return config;
   };
   const onRequestFail = (error) => Promise.reject(error);
@@ -22,3 +28,7 @@ export const setupAxiosInterceptors = (onUnauthenticated) => {
   };
   HttpService.addResponseInterceptor(onResponseSuccess, onResponseFail);
 };
+
+
+
+

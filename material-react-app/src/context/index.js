@@ -36,23 +36,25 @@ export const MusicKitProvider = ({ children }) => {
   
   const [music, setMusic] = useState(null);
   
- 
-  
   useEffect(() => {
- if(MusicKit){
-      const musicInstance = MusicKit.configure({
-        developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3Mjg2MTgxLCJleHAiOjE3MDE2ODYxODF9.bQ8nsMrBES7AI0o5RO29vCq-4m9SrwQrwQedtB6sqXXp6DP8akvQsoFXjAB4jrhAWGtj3nLeZiL6XElvd3FEBg',
+    const interval = setInterval(() => {
+      if (typeof MusicKit !== 'undefined') {
+        clearInterval(interval);
+        const musicInstance = MusicKit.configure({
+          developerToken: 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjY3TDY2U05QTTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJVN1dLODZQTFlYIiwiaWF0IjoxNjg3Mjg2MTgxLCJleHAiOjE3MDE2ODYxODF9.bQ8nsMrBES7AI0o5RO29vCq-4m9SrwQrwQedtB6sqXXp6DP8akvQsoFXjAB4jrhAWGtj3nLeZiL6XElvd3FEBg',
           app: {
               name: 'My Cool Web App',
               build: '1978.4.1',
           },
-      }).then(musicInstance => {
-        setMusic(musicInstance);
-      }).catch(error => {
-        console.error('Error configuring MusicKit:', error);
-      });
-    }
+        }).then(musicInstance => {
+          setMusic(musicInstance);
+        }).catch(error => {
+          console.error('Error configuring MusicKit:', error);
+        });
+      }
+    }, 100); // Check every 100 ms
   }, []);
+
   return (
     <MusicKitContext.Provider value={music}>
       {children}

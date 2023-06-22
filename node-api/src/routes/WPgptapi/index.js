@@ -2,13 +2,23 @@ import express from "express";
 
 import passport from "passport";
 // Middleware to parse JSON bodies
+import expressSession from 'express-session';
 
 const router = express.Router();
+
+router.use(expressSession({
+  secret: 'my secret', // replace this with a real secret in production
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // in production, you should set this to true
+}));
 // Middleware to parse JSON bodies
 router.use(express.json());
-
+import { userModel } from "../../schemas/user.schema";
 // Middleware to parse URL-encoded bodies
-
+const CLIENT_ID="87833"
+const CLIENT_SECRET="vnWsWAvLBzvb3j40QBQQFQtIFnqzSc7jtlA4ltSpSOC4TXot1B3FUDecfZbumw7r"
+const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
 import { Configuration, OpenAIApi } from "openai";
 import base64 from 'base-64'; 
 const configuration = new Configuration({
@@ -56,8 +66,7 @@ function extractTextBetweenDoubleBrackets(text) {
 router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
     
     const topics = req.body.prompt.split("\n");
-    const username = 'kwill5800';
-    const password = 'vime5rpyh6nc5koz';
+
 
     const token = base64.encode(username + ':' + password);    
     const tasks = topics.map(async topic => {
@@ -84,32 +93,39 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
   
     // Wait for all tasks to complete
     let generations = await Promise.all(tasks);
-    for(let post of generations) {
-        const requestOptionsWordpress = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${token}`,
-            },
-            body: JSON.stringify({
-                // assuming "title" and "content" are correct properties for the WordPress API
-                title: post.title,
-                content: post.content,
-                status: 'publish' // if you want to auto-publish the post
-            })
-        };
-    
-        const response = await fetch("https://public-api.wordpress.com/wp/v2/sites/kwill5800440205732.wordpress.com/posts/", requestOptionsWordpress);
-        if(response.ok) {
-          console.log(`Posted "${post.title}" successfully!`);
-        } else {
-            console.log(response)
-          console.log(`Failed to post "${post.title}".`);
-        }
-      }
+
     // Send the generations back as the response
     res.json(generations);
 
   });
+  import OAuth2Strategy from 'passport-oauth2';
+  passport.use('wordpress', new OAuth2Strategy({
+    authorizationURL: 'https://public-api.wordpress.com/oauth2/authorize',
+    tokenURL: 'https://public-api.wordpress.com/oauth2/token',
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    callbackURL: REDIRECT_URI
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    // Here, you can store the accessToken in the session.
+    console.log(accessToken)
 
+    return cb();
+  }));
+  
+  router.get('/auth/wordpress/callback', function(req, res, next) {
+    passport.authenticate('wordpress', function(err, user, info) {
+      if (err || !user) {
+        // Here, you can retrieve the accessToken from the session.
 
+        return res.redirect(`http://localhost:3000/WordpressGPT`);
+      }
+      req.logIn(user, function(err) {
+        if (err) {
+          return res.status(500).json({ error: 'An error occurred during login.', details: err });
+        }
+        return res.redirect('http://localhost:3000');
+      });
+    })(req, res, next);
+  });
 export default router;

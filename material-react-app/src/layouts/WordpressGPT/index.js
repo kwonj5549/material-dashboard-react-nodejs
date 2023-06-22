@@ -94,12 +94,18 @@ function WordpressGPT() {
   const [tabvalue, setTabValue] = useState(0);
   const [appPass, setappPassInput] = useState("");
   const [WPusername, setWPusernameInput] = useState("kwill5800");
+  const [accessToken, setAccessToken] = useState("");
+ 
+ const CLIENT_ID="87833"
+const CLIENT_SECRET="vnWsWAvLBzvb3j40QBQQFQtIFnqzSc7jtlA4ltSpSOC4TXot1B3FUDecfZbumw7r"
+const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
   const handlefPenInputChange = (event) => {
     setfpenValue(parseFloat(event.target.value));
   };
+  
 
   const handlefPenSliderChange = (event, newValue) => {
     setfpenValue(newValue);
@@ -126,7 +132,39 @@ function WordpressGPT() {
   const handleMaxTokenSliderChange = (event, newValue) => {
     setMaxTokenValue(newValue);
   };
-
+  useEffect(() => {
+    // Parse the authorization code from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    const userId = JSON.parse(localStorage.getItem("user"));
+    // Check if the state value matches the user ID in the local storage
+  
+   
+  
+    if (code) {
+      // Exchange the authorization code for an access token
+      fetch('https://public-api.wordpress.com/oauth2/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${userId.id}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.access_token) {
+          localStorage.setItem("access_token", data.access_token);
+          setAccessToken(data.access_token);
+        }
+      });
+    }
+    
+    const savedAccessToken = localStorage.getItem("access_token");
+    if (savedAccessToken) {
+      setAccessToken(savedAccessToken);
+    }
+  }, []);
   const renderSuccessSnackbar = (
     <MDSnackbar
       color="success"
@@ -154,9 +192,9 @@ function WordpressGPT() {
     />
   );
   const music = useContext(MusicKitContext);
-  const handleAuthorize = () => {
-    
-  };
+  const handleAuthorize = async () => {
+    window.location.href = `https://public-api.wordpress.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+};
   const handleUnauthorize = () => {
 
     music.unauthorize();
@@ -207,8 +245,14 @@ const sendData = async () => {
 
 
 };
-
-
+useEffect(() => {
+let params = new URLSearchParams(window.location.search);
+let wpToken = params.get('access_token');
+if (wpToken) {
+  // Use the access token
+  console.log(wpToken);
+}
+}, []);
 
   return (
     <DashboardLayout>

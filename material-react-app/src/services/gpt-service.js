@@ -17,8 +17,12 @@ class GPTService {
   };
 
   oauthWordpress = async (payload) => {
-    const oauthWordpressEndpoint = 'wp-oauth/redirect';
+    const oauthWordpressEndpoint = 'auth/wordpress';
     return await HttpService.post(oauthWordpressEndpoint, payload);
+  };
+  oauthWordpressCallback = async (payload) => {
+    const oauthWordpressCallbackEndpoint = 'auth/wordpress/callback';
+    return await HttpService.post(oauthWordpressCallbackEndpoint, payload);
   };
 }
 
