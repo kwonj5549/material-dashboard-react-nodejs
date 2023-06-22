@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   profile_image: { type: String },
   created_at: { type: Date },
   updated_at: { type: Date },
-  wordpress_access_token: { type: String },
+  wordpressAccessToken: { type: String },
 });
 
 userSchema.virtual("id").get(function () {

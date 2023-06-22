@@ -92,10 +92,10 @@ function WordpressGPT() {
   const [tempvalue, setTempValue] = useState(.7);
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
-  const [appPass, setappPassInput] = useState("");
+  const [siteURL, setsiteURL] = useState("");
   const [WPusername, setWPusernameInput] = useState("kwill5800");
   const [accessToken, setAccessToken] = useState("");
- 
+ const [WPaccessToken, setWPaccessToken] = useState("")
  const CLIENT_ID="87833"
 const CLIENT_SECRET="vnWsWAvLBzvb3j40QBQQFQtIFnqzSc7jtlA4ltSpSOC4TXot1B3FUDecfZbumw7r"
 const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
@@ -132,6 +132,7 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
   const handleMaxTokenSliderChange = (event, newValue) => {
     setMaxTokenValue(newValue);
   };
+
   useEffect(() => {
     // Parse the authorization code from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -193,21 +194,21 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
   );
   const music = useContext(MusicKitContext);
   const handleAuthorize = async () => {
-    window.location.href = `https://public-api.wordpress.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+    const userId = JSON.parse(localStorage.getItem("user"));
+    window.location.href = `https://public-api.wordpress.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${userId.id}&response_type=code`;
 };
   const handleUnauthorize = () => {
 
-    music.unauthorize();
-    setLinkState(false)
-    console.log('User unauthorized');
+    localStorage.removeItem('WPaccessToken');
+    setWPaccessToken("")
   }
   useEffect(() => {
-    if (music && music.musicUserToken) {
+    if (WPaccessToken) {
       setLinkState(true);
     } else {
       setLinkState(false);
     }
-}, [music?.musicUserToken]);
+}, [WPaccessToken]);
 
 const sendData = async () => {
   setIsLoading(true);
@@ -223,7 +224,8 @@ const sendData = async () => {
   const payload = {
     prompt: input,
     useAdvancedSettings: tabvalue, 
-    advancedSettings:advancedSettings
+    advancedSettings:advancedSettings,
+    siteURL:siteURL
     
   };
 
@@ -246,13 +248,17 @@ const sendData = async () => {
 
 };
 useEffect(() => {
-let params = new URLSearchParams(window.location.search);
-let wpToken = params.get('access_token');
-if (wpToken) {
-  // Use the access token
-  console.log(wpToken);
-}
+  let token = new URLSearchParams(window.location.search).get('accessToken');
+  if (!token) {
+    token = localStorage.getItem('WPaccessToken');
+  }
+  setWPaccessToken(token);
+  if (token) {
+    localStorage.setItem('WPaccessToken', token);
+  }
 }, []);
+
+
 
   return (
     <DashboardLayout>
@@ -452,15 +458,15 @@ if (wpToken) {
     justifyContent: 'flex-start' 
   }}
 >
-              <Typography variant="h6">Application Password:</Typography>
+              <Typography variant="h6">Site URL</Typography>
               <MDInput
                 className={classes.input}
                 label="Enter your Application Password"
                 multiline
                 rows={1}
                 sx={{ width:"40%"}}
-                value={appPass}
-                onChange={event => setappPassInput(event.target.value)}
+                value={siteURL}
+                onChange={event => setsiteURL(event.target.value)}
               />
               </MDBox>
               <Divider /> 

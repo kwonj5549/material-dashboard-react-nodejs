@@ -2,16 +2,11 @@ import express from "express";
 
 import passport from "passport";
 // Middleware to parse JSON bodies
-import expressSession from 'express-session';
+
 
 const router = express.Router();
 
-router.use(expressSession({
-  secret: 'my secret', // replace this with a real secret in production
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // in production, you should set this to true
-}));
+
 // Middleware to parse JSON bodies
 router.use(express.json());
 import { userModel } from "../../schemas/user.schema";
@@ -66,9 +61,15 @@ function extractTextBetweenDoubleBrackets(text) {
 router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
     
     const topics = req.body.prompt.split("\n");
+  const WPuserId = req.headers.userid
+  console.log(WPuserId)
+  const user = await userModel.findOne({ _id: WPuserId });
+  console.log(user)
+  const WP_AUTH_TOKEN = user.wordpressAccessToken
+const WP_API_URL = req.body.siteURL
+console.log(WP_AUTH_TOKEN)
 
-
-    const token = base64.encode(username + ':' + password);    
+  
     const tasks = topics.map(async topic => {
       let completion;
       if (req.body.useAdvancedSettings == 1) {
@@ -93,7 +94,31 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
   
     // Wait for all tasks to complete
     let generations = await Promise.all(tasks);
-
+    generations.forEach(async (blog) => {
+      try {
+        const response = await fetch(`https://public-api.wordpress.com/wp/v2/sites/${WP_API_URL}/posts/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${WP_AUTH_TOKEN}`
+          },
+          body: JSON.stringify({
+            // assuming "title" and "content" are correct properties for the WordPress API
+            title: blog.title,
+            content: blog.content,
+            status: 'publish' // if you want to auto-publish the post
+          })
+        });
+  
+        if (!response.ok) throw new Error(response.statusText);
+        
+        const data = await response.json();
+  
+        console.log(`Blog post with ID: ${data.id} created.`);
+      } catch (error) {
+        console.error(`Failed to create blog post: ${error.message}`);
+      }
+    });
     // Send the generations back as the response
     res.json(generations);
 
@@ -104,28 +129,34 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
     tokenURL: 'https://public-api.wordpress.com/oauth2/token',
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
-    callbackURL: REDIRECT_URI
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    // Here, you can store the accessToken in the session.
-    console.log(accessToken)
-
-    return cb();
+    callbackURL: REDIRECT_URI,
+    passReqToCallback: true // pass the request to the callback
+  }, 
+ async function(req, accessToken, refreshToken, profile, done) { // notice the added "req" here
+    console.log('Inside OAuth2Strategy function');
+    console.log('Access Token: ', accessToken);
+    
+    const userId = req.query.state;
+    console.log('User ID (state): ', userId);
+    
+   
+  try {
+    const user = await userModel.findOneAndUpdate({ _id: userId }, { $set: { wordpressAccessToken: accessToken } }, { new: true, upsert: true });
+    console.log(user)
+    done(null, user);
+  } catch(err) {
+    done(err);
+  }
   }));
-  
   router.get('/auth/wordpress/callback', function(req, res, next) {
+    console.log('Inside auth callback handler'); // <-- new logging statement
     passport.authenticate('wordpress', function(err, user, info) {
-      if (err || !user) {
-        // Here, you can retrieve the accessToken from the session.
-
-        return res.redirect(`http://localhost:3000/WordpressGPT`);
-      }
-      req.logIn(user, function(err) {
-        if (err) {
-          return res.status(500).json({ error: 'An error occurred during login.', details: err });
-        }
-        return res.redirect('http://localhost:3000');
-      });
+      console.log('Inside authenticate function'); // <-- new logging statement
+     
+        return res.redirect(`http://localhost:3000/WordpressGPT?accessToken=${user.wordpressAccessToken}`);
+    
+     
+         
     })(req, res, next);
   });
 export default router;
