@@ -1,15 +1,15 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
 import React, { useState, useEffect } from 'react';
-// GPT Toolkit React components
+// GPT Toolbox React components
 import MDBox from "components/MDBox";
 
-// GPT Toolkit React example components
+// GPT Toolbox React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-// GPT Toolkit React Components
+// GPT Toolbox React Components
 import MDInput from "components/MDInput";
 
 import MDButton from "components/MDButton";
@@ -30,7 +30,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from "@mui/material/TextField";
 import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
+import { ApiUsageContext } from 'context/index.js';
 
+  
 import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
@@ -69,6 +71,7 @@ const useBlurStyles = makeStyles((theme) => ({
 }));
 import Typography from '@mui/material/Typography';
 function AppleMusicGPT() {
+  const { apiUsage, setApiUsage,apiUsageisLoading  } = useContext(ApiUsageContext);
   const classes = useStyles();
   const classesblur = useBlurStyles();
   const [input, setInput] = useState("");
@@ -201,8 +204,10 @@ function AppleMusicGPT() {
     try {
 
       const response = await GPTService.generateAppleMusic(JSON.stringify(payload));
-
-      setResponseData(response); // Do something with the response
+      
+console.log(response)
+setApiUsage(response.apiUsage)
+      setResponseData(response.playlist); // Do something with the response
       openAppleMusicGPTSnackbarSuccess();
       setInput("");
 

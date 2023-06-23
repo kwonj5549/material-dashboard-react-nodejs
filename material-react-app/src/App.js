@@ -172,7 +172,7 @@ export default function App() {
   return (
     
     <>
-    <MusicKitProvider>
+    
         {/* Rest of your app components */}
       
       {isDemo}
@@ -233,7 +233,7 @@ export default function App() {
           </Routes>
         </ThemeProvider>
       )}
-      </MusicKitProvider>
+     
     </>
     
   );

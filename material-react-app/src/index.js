@@ -19,15 +19,21 @@ import { BrowserRouter } from "react-router-dom";
 import App from "App";
 import { AuthContextProvider } from "context";
 
+
 // GPT Toolkit React Context Provider
 import { MaterialUIControllerProvider } from "context";
+import { MusicKitProvider,ApiUsageProvider } from "context";
 
 ReactDOM.render(
   <BrowserRouter>
     <AuthContextProvider>
+      <ApiUsageProvider>
+      <MusicKitProvider>
       <MaterialUIControllerProvider>
         <App />
       </MaterialUIControllerProvider>
+      </MusicKitProvider>
+      </ApiUsageProvider>
     </AuthContextProvider>
   </BrowserRouter>,
   document.getElementById("root")

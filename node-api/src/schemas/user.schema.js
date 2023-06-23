@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   created_at: { type: Date },
   updated_at: { type: Date },
   wordpressAccessToken: { type: String },
+  apiUsage: { type: Number },
 });
 
 userSchema.virtual("id").get(function () {

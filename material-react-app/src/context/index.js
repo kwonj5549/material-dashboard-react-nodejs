@@ -30,7 +30,7 @@ const MaterialUI = createContext();
 
 // Create Context
 export const MusicKitContext = createContext();
-
+import GPTService from 'services/gpt-service';
 // Create Provider
 export const MusicKitProvider = ({ children }) => {
   
@@ -61,7 +61,32 @@ export const MusicKitProvider = ({ children }) => {
     </MusicKitContext.Provider>
   );
 };
+export const ApiUsageContext=createContext();
+export const ApiUsageProvider = ({ children }) => {
+  const [apiUsage, setApiUsage] = useState(0);
 
+   useEffect(() => {
+    const fetchAPIUsage = async () => {
+      try {
+        const response = await GPTService.fetchAPIUse();
+        console.log(response);
+        if (response) {
+          setApiUsage(response.apiUsage);
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle your error properly
+      }
+    };
+
+    fetchAPIUsage();
+  }, []);
+  return (
+    <ApiUsageContext.Provider value={{ apiUsage, setApiUsage }}>
+      {children}
+    </ApiUsageContext.Provider>
+  );
+};
 // authentication context
 export const AuthContext = createContext({
   isAuthenticated: false,

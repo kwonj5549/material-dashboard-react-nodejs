@@ -23,7 +23,7 @@ import { MusicKitContext } from 'context/index.js';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from "@mui/styles";
-import applemusicimg from "assets/images/apple-music8293.png"
+import wordpressimg from "assets/images/wordpress.png"
 import infinigptlogo from "assets/images/infinigptlogo.png"
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
@@ -258,43 +258,51 @@ useEffect(() => {
   }
 }, []);
 
+return (
+  <DashboardLayout>
+    <DashboardNavbar />
+    <div className={isLoading ? classesblur.blur : ''}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <MDBox
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              p: 1,
+              borderRadius: 1,
+              mb: 0,
+              ml: 3,
+              pl: 0
+            }}
+          >
+            <MDBox sx={{ display: 'flex', alignItems: 'center', p: 2, pl: 0 }}>
+              <Typography sx={{ pr: 2 }} variant="h2" align="left">Wordpress GPT</Typography>
 
+              <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
+                <Tab label="Basic" />
+                <Tab label="Advanced" />
+                <Tab label="History" />
+              </Tabs>
+            </MDBox>
 
-  return (
-    <DashboardLayout>
-      <DashboardNavbar />
-      <div className={isLoading ? classesblur.blur : ''}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <MDBox
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                p: 1,
-                borderRadius: 1,
-                mb: 0,
-                ml: 3,
-                pl: 0
-              }}
-            >
-                <MDBox sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'left', p: 2,pl:0 }}>
-              <Typography sx={{pr:2}}variant="h2" align="left">Wordpress GPT</Typography>
-           
-              
-
-                  <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
-                    <Tab label="Basic" />
-                    <Tab label="Advanced" />
-                    <Tab label="History" />
-                  </Tabs>
-                </MDBox>
-      
+            <MDBox sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+              <Typography variant="h6">Site URL:</Typography>
+              <MDInput
+                className={classes.input}
+                label="Enter your site url"
+                multiline
+                rows={1}
+                sx={{ width: "40%", ml: 2 }} // Adjust width here as per your needs
+                value={siteURL}
+                onChange={event => setsiteURL(event.target.value)}
+              />
+            </MDBox>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                 <img src={infinigptlogo} alt="Logo" style={{ height: '50px', width: '50px' }} />
                 {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }} /> : <LinkOffIcon fontSize="large" style={{ color: 'red' }} />}
-                <img src={applemusicimg} alt="Logo" style={{ height: '50px', width: '50px' }} />
+                <img src={wordpressimg} alt="Logo" style={{ height: '50px', width: '50px' ,marginRight: '10px' }} />
                 {linkState ? <MDButton
                   variant="gradient"
                   color="info"
@@ -451,26 +459,7 @@ useEffect(() => {
               />
               </MDBox>
               <Divider /> 
-              <MDBox 
-  sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'flex-start' 
-  }}
->
-              <Typography variant="h6">Site URL</Typography>
-              <MDInput
-                className={classes.input}
-                label="Enter your Application Password"
-                multiline
-                rows={1}
-                sx={{ width:"40%"}}
-                value={siteURL}
-                onChange={event => setsiteURL(event.target.value)}
-              />
-              </MDBox>
-              <Divider /> 
-
+            
               <Grid container direction="row" alignItems="center" spacing={2}>
                 <Grid item xs={3}>
                   <Typography variant="h6">Frequency Penalty:</Typography>

@@ -98,6 +98,7 @@ function Register() {
       const response = await AuthService.register(myData);
       if(response&&response.access_token){
         userData = jwt_decode(response.access_token);
+        console.log(userData)
       }
       authContext.login(response.access_token, userData);
 

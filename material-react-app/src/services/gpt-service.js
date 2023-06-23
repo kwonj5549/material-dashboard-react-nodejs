@@ -24,6 +24,10 @@ class GPTService {
     const oauthWordpressCallbackEndpoint = 'auth/wordpress/callback';
     return await HttpService.post(oauthWordpressCallbackEndpoint, payload);
   };
+  fetchAPIUse = async (payload) => {
+    const fetchAPIUse = 'fetch-apiUsage';
+    return await HttpService.get(fetchAPIUse, payload);
+  };
 }
 
 export default new GPTService();

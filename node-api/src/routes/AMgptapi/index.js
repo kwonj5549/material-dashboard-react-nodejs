@@ -10,7 +10,7 @@ router.use(express.json());
 // Middleware to parse URL-encoded bodies
 
 import { Configuration, OpenAIApi } from "openai";
-
+import { userModel } from "../../schemas/user.schema";
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -97,7 +97,34 @@ async function createPlaylistWithSongs(playlistName,trackIds,userToken) {
   
 
 }
-   
+router.get('/fetch-apiUsage', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        let userId = req.headers.userid;
+
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Fetch the user
+        const user = await userModel.findOne({ _id: userId });
+
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Send the response
+        res.json({apiUsage:user.apiUsage});
+        console.log(user.apiUsage)
+    } catch (error) {
+        // Log the error for debugging
+        console.error(error);
+        
+        // Send error response
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false}), async (req, res) => {
     const sysprompt = "you are AI playlist generator";
@@ -132,6 +159,17 @@ router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false})
         top_p: 1
     });
 }
+let userId = req.headers.userid
+
+const user = await userModel.findOne({ _id: userId });
+
+let cost = 0;
+cost = cost + (completion.data.usage.prompt_tokens/1000)*0.03+(completion.data.usage.completion_tokens/1000)*0.06;
+
+let userAPIUsage = user.apiUsage + cost
+await userModel.findOneAndUpdate({ _id: userId }, { $set: { apiUsage: userAPIUsage } }, { new: true, upsert: true });
+console.log(cost)
+
     console.log(completion.data.choices[0].message.content);
     const generatedText = completion.data.choices[0].message.content;
 
@@ -190,8 +228,10 @@ router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false})
             }
         }
     }
-
-    res.send(playlist);
+    res.send({
+        playlist,
+        apiUsage: userAPIUsage,
+      });
     const trackIds = playlist.songs.map(song => song.trackid);
     if (trackIds.length > 0) {
         if (playlist.playlistName){
