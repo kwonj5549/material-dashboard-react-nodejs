@@ -33,7 +33,7 @@ import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
+import { ApiUsageContext } from 'context/index.js';
 import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
@@ -84,7 +84,7 @@ function WordpressGPT() {
   const closeWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
-
+  const { apiUsage, setApiUsage,apiUsageisLoading  } = useContext(ApiUsageContext);
   const openWordpressGPTSnackbarUnauth = () => setSnackbarUnauthOpen(true);
   const closeWordpressGPTSnackbarUnauth = () => setSnackbarUnauthOpen(false);
   const [ppenvalue, setppenValue] = useState(.35);
@@ -232,11 +232,12 @@ const sendData = async () => {
   try {
 
     const response = await GPTService.generateWordpress(JSON.stringify(payload));
-    setSelectedBlog(response[0])
-    setResponseData(response); 
+    setApiUsage(response.apiUsage)
+    setSelectedBlog(response.generations[0])
+    setResponseData(response.generations); 
    
     console.log(selectedBlog)// Do something with the response
-    openAppleMusicGPTSnackbarSuccess();
+    openWordpressGPTSnackbarSuccess();
     setInput("");
 
   } catch (error) {

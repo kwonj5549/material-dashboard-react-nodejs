@@ -68,16 +68,19 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
   const WP_AUTH_TOKEN = user.wordpressAccessToken
 const WP_API_URL = req.body.siteURL
 console.log(WP_AUTH_TOKEN)
+let userAPIUsage = user.apiUsage;
 
-  
     const tasks = topics.map(async topic => {
       let completion;
+ 
+     
       if (req.body.useAdvancedSettings == 1) {
         completion = await generateAdvancedBlogPost(topic,req);
+        
       } else {
         completion = await generateBasicBlogPost(topic);
       }
-  
+      userAPIUsage = userAPIUsage + (completion.data.usage.prompt_tokens/1000)*0.03+(completion.data.usage.completion_tokens/1000)*0.06;
       console.log(completion.data.choices[0].message.content);
       const generatedText = completion.data.choices[0].message.content;
   
@@ -120,8 +123,11 @@ console.log(WP_AUTH_TOKEN)
       }
     });
     // Send the generations back as the response
-    res.json(generations);
-
+    await userModel.findOneAndUpdate({ _id: WPuserId }, { $set: { apiUsage: userAPIUsage } }, { new: true, upsert: true });
+    res.send({
+      generations,
+      apiUsage: userAPIUsage,
+    });
   });
   import OAuth2Strategy from 'passport-oauth2';
   passport.use('wordpress', new OAuth2Strategy({
