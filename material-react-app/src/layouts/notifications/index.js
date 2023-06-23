@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -19,14 +19,14 @@ import { useState } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
-// Material Dashboard 2 React components
+// GPT Toolkit React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAlert from "components/MDAlert";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 
-// Material Dashboard 2 React example components
+// GPT Toolkit React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
@@ -189,7 +189,7 @@ function Notifications() {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer />
+
     </DashboardLayout>
   );
 }

@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -21,10 +21,10 @@ import { useLocation } from "react-router-dom";
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
-// Material Dashboard 2 React components
+// GPT Toolkit React components
 import MDBox from "components/MDBox";
 
-// Material Dashboard 2 React context
+// GPT Toolkit React context
 import { useMaterialUIController, setLayout } from "context";
 
 function DashboardLayout({ children }) {

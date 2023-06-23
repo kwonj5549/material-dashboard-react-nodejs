@@ -85,9 +85,9 @@ The documentation for the Node API is hosted at our [here](https://documenter.ge
 - Issues: [Github Issues Page](https://)
 
 ## Dashboards built with Node API
-| Material Dashboard 2 React|
+| GPT Toolkit React|
 | --- |
-| [![Material Dashboard 2 React Node JS](https://s3.amazonaws.com/creativetim_bucket/products/689/original/react-material-dashboard-pro-nodejs.jpg?1664790326)](https://material-dashboard-react-node.creative-tim.com/auth/login?ref=hceja-readme)
+| [![GPT Toolkit React Node JS](https://s3.amazonaws.com/creativetim_bucket/products/689/original/react-material-dashboard-pro-nodejs.jpg?1664790326)](https://material-dashboard-react-node.creative-tim.com/auth/login?ref=hceja-readme)
 
 
 ## Reporting Issues

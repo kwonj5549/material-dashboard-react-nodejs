@@ -1,4 +1,4 @@
-# [Material Dashboard 2 React NodeJS API](https://material-dashboard-react-nodejs.creative-tim.com) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=Check%20Material%20Dashboard%20%20PRO%20React%20made%20by%20%40CreativeTim%20and%20%40UPDIVISION%20%23webdesign%20%23dashboard%20%23react%20%23mui&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fmaterial-dashboard-react-node)
+# [GPT Toolkit React NodeJS API](https://material-dashboard-react-nodejs.creative-tim.com) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=Check%20Material%20Dashboard%20%20PRO%20React%20made%20by%20%40CreativeTim%20and%20%40UPDIVISION%20%23webdesign%20%23dashboard%20%23react%20%23mui&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fmaterial-dashboard-react-node)
 
 ![version](https://img.shields.io/badge/version-2.1.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/material-dashboard-react.svg)](https://github.com/creativetimofficial/material-dashboard-react-nodejs/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/material-dashboard-react.svg)](https://github.com/creativetimofficial/material-dashboard-react-nodejs/issues?q=is%3Aissue+is%3Aclosed)
 
@@ -32,7 +32,7 @@ During the development of this dashboard, we have used many existing resources f
 
 Let us know your thoughts below. And good luck with development!
 
-If you want to get more features, go PRO with [Material Dashboard 2 PRO React NodeJS API](https://www.creative-tim.com/product/material-dashboard-pro-react-nodejs).
+If you want to get more features, go PRO with [GPT Toolkit PRO React NodeJS API](https://www.creative-tim.com/product/material-dashboard-pro-react-nodejs).
 
 ## Table of Contents
 
@@ -61,7 +61,7 @@ If you want to get more features, go PRO with [Material Dashboard 2 PRO React No
 
 | React + Laravel JSON:API                                                                                                                                                                                                                                                   | React + NodeJS                                                                                                                                                                                                                                                               |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Material Dashboard 2 React Laravel JSON:API](https://s3.amazonaws.com/creativetim_bucket/products/686/original/react-material-dashboard-laravel.jpg?1664783836)](https://react-material-dashboard-laravel.creative-tim.com/auth/login?ref=readme-mdpr) | [![Material Dashboard 2 React NodeJS API](https://s3.amazonaws.com/creativetim_bucket/products/157/original/react-material-dashboard-nodejs.jpg?1664786816)](https://material-dashboard-react-nodejs.creative-tim.com/auth/login?ref=readme-mdpr) |
+| [![GPT Toolkit React Laravel JSON:API](https://s3.amazonaws.com/creativetim_bucket/products/686/original/react-material-dashboard-laravel.jpg?1664783836)](https://react-material-dashboard-laravel.creative-tim.com/auth/login?ref=readme-mdpr) | [![GPT Toolkit React NodeJS API](https://s3.amazonaws.com/creativetim_bucket/products/157/original/react-material-dashboard-nodejs.jpg?1664786816)](https://material-dashboard-react-nodejs.creative-tim.com/auth/login?ref=readme-mdpr) |
 
 
 | React                                                                                                                                                                                                                                  |

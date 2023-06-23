@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -14,9 +14,9 @@ Coded by www.creative-tim.com
 */
 
 /**
- * The base colors for the Material Dashboard 2 PRO React.
+ * The base colors for the GPT Toolkit PRO React.
  * You can add new color using this file.
- * You can customized the colors for the entire Material Dashboard 2 PRO React using thie file.
+ * You can customized the colors for the entire GPT Toolkit PRO React using thie file.
  */
 
 const colors = {

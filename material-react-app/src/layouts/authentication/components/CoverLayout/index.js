@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -19,11 +19,11 @@ import PropTypes from "prop-types";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
-// Material Dashboard 2 React components
+// GPT Toolkit React components
 import MDBox from "components/MDBox";
 // import MDTypography from "components/MDTypography";
 
-// Material Dashboard 2 React example components
+// GPT Toolkit React example components
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
@@ -69,7 +69,7 @@ function CoverLayout({ coverHeight, image, children }) {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer />
+
     </PageLayout>
   );
 }

@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -19,10 +19,10 @@ import PropTypes from "prop-types";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
-// Material Dashboard 2 React components
+// GPT Toolkit React components
 import MDBox from "components/MDBox";
 
-// Material Dashboard 2 React example components
+// GPT Toolkit React example components
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
@@ -86,12 +86,9 @@ function BasicLayout({ image, children }) {
                     width="80%"
                   >
                     <Typography variant="h3" style={{ color: "white" }}>
-                      Log in to Material Dashboard NodeJS Live Preview
+                    Log in to GPT Toolkit
                     </Typography>
-                    <Typography variant="body2" style={{ color: "white" }} margin="0.5rem 0">
-                      Log in to see how you can go from frontend to fullstack in an instant with an
-                      API-based NodeJS backend
-                    </Typography>
+                   
                     <MDBox
                       display="flex"
                       flexDirection="column"
@@ -100,7 +97,7 @@ function BasicLayout({ image, children }) {
                       marginBottom="0.5rem"
                     >
                       <Typography variant="body2" fontWeight="700" style={{ color: "white" }}>
-                        You can log in with
+                      
                       </Typography>
                       <List dense={true}>
                         <ListItem>
@@ -112,13 +109,13 @@ function BasicLayout({ image, children }) {
                                 fontWeight="400"
                                 style={{ color: "white" }}
                               >
-                                Username{" "}
+                               
                                 <Typography variant="span" fontWeight="700">
-                                  admin@jsonapi.com
+                                   
                                 </Typography>{" "}
-                                with password{" "}
+                                 
                                 <Typography variant="span" fontWeight="700">
-                                  secret
+                                 
                                 </Typography>
                               </Typography>
                             }
@@ -138,7 +135,7 @@ function BasicLayout({ image, children }) {
               </MDBox>
             </MDBox>
           </MDBox>
-          <Footer light />
+   
         </MDBox>
       </MDBox>
     </PageLayout>

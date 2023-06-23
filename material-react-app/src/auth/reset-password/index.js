@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 // @mui material components
 import Card from "@mui/material/Card";
 
-// Material Dashboard 2 React components
+// GPT Toolkit React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";

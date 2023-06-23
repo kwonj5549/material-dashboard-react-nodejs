@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 */
 
 /** 
-  All of the routes for the Material Dashboard 2 React are added here,
+  All of the routes for the GPT Toolkit React are added here,
   You can add a new route, customize the routes and delete the routes here.
 
   Once you add a new route on this file it will be visible automatically on
@@ -35,7 +35,7 @@ Coded by www.creative-tim.com
   10. The `component` key is used to store the component of its route.
 */
 
-// Material Dashboard 2 React layouts
+// GPT Toolkit React layouts
 import Dashboard from "layouts/dashboard";
 
 

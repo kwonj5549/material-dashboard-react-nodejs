@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -19,7 +19,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "App";
 import { AuthContextProvider } from "context";
 
-// Material Dashboard 2 React Context Provider
+// GPT Toolkit React Context Provider
 import { MaterialUIControllerProvider } from "context";
 
 ReactDOM.render(

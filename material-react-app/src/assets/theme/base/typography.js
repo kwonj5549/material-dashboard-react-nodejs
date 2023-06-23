@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* GPT Toolkit React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -14,15 +14,15 @@ Coded by www.creative-tim.com
 */
 
 /**
- * The base typography styles for the Material Dashboard 2 PRO React.
+ * The base typography styles for the GPT Toolkit PRO React.
  * You can add new typography style using this file.
- * You can customized the typography styles for the entire Material Dashboard 2 PRO React using thie file.
+ * You can customized the typography styles for the entire GPT Toolkit PRO React using thie file.
  */
 
-// Material Dashboard 2 React Base Styles
+// GPT Toolkit React Base Styles
 import colors from "assets/theme/base/colors";
 
-// Material Dashboard 2 React Helper Functions
+// GPT Toolkit React Helper Functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
 const { dark } = colors;
