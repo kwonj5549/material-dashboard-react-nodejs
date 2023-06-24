@@ -28,6 +28,16 @@ class GPTService {
     const fetchAPIUse = 'fetch-apiUsage';
     return await HttpService.get(fetchAPIUse, payload);
   };
+
+  saveWPSiteUrl = async (payload) => {
+    const saveWPSiteUrl = 'saveSiteUrl';
+    return await HttpService.post(saveWPSiteUrl, payload);
+  };
+  fetchWPSiteUrl = async (payload) => {
+    const fetchWPSiteUrl = 'fetch-WPSiteURL';
+    return await HttpService.post(fetchWPSiteUrl, payload);
+  };
+ 
 }
 
 export default new GPTService();

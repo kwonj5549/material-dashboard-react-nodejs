@@ -18,7 +18,7 @@ import Grid from "@mui/material/Grid";
 
 // GPT Toolkit React components
 import MDBox from "components/MDBox";
-import  { useContext } from 'react';
+import  { useContext, useEffect,useState } from 'react';
 // GPT Toolkit React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -37,8 +37,12 @@ import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import { ApiUsageContext } from 'context/index.js';
 function Dashboard() {
   const { apiUsage, setApiUsage,apiUsageisLoading  } = useContext(ApiUsageContext);
+  const [userApiUsage, setuserApiUsage] =useState(0)
   const { sales, tasks } = reportsLineChartData;
   const { user } = useContext(AuthContext);
+  useEffect(()=>{
+    setuserApiUsage(apiUsage)
+  },[apiUsage]);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -62,7 +66,7 @@ function Dashboard() {
     <ComplexStatisticsCard
         icon="leaderboard"
         title="API Usage"
-        count={user ? `$${Number(apiUsage).toFixed(3)}` : null}
+        count={user ? `$${Number(userApiUsage).toFixed(3)}` : null}
         percentage={{      
         }}
     />

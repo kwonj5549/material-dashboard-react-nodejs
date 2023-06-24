@@ -14,4 +14,4 @@ const historySchema = new mongoose.Schema({
 
 historySchema.set("toJSON", { virtuals: true });
 
-export const userModel = mongoose.model("User", historySchema);
+export const historyModel = mongoose.model("History", historySchema);

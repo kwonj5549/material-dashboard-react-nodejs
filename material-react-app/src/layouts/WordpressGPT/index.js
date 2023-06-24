@@ -34,6 +34,7 @@ import Divider from "@mui/material/Divider";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ApiUsageContext } from 'context/index.js';
+import { WPSiteURLContext } from 'context/index.js';
 import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
@@ -72,6 +73,8 @@ const useBlurStyles = makeStyles((theme) => ({
 }));
 import Typography from '@mui/material/Typography';
 function WordpressGPT() {
+  const {WPSiteURL, setWPSiteURL } = useContext(WPSiteURLContext);
+  
   const classes = useStyles();
   const classesblur = useBlurStyles();
   const [input, setInput] = useState("");
@@ -79,7 +82,7 @@ function WordpressGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this");
+  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: {topic} in the style of an expert with 15 years of experience without explicitly mentioning this");
   const openWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
@@ -106,7 +109,6 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
     setfpenValue(parseFloat(event.target.value));
   };
   
-
   const handlefPenSliderChange = (event, newValue) => {
     setfpenValue(newValue);
   };
@@ -132,7 +134,10 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
   const handleMaxTokenSliderChange = (event, newValue) => {
     setMaxTokenValue(newValue);
   };
+useEffect(()=>{
+  setsiteURL(WPSiteURL);
 
+},[WPSiteURL]);
   useEffect(() => {
     // Parse the authorization code from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -201,6 +206,14 @@ const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
 
     localStorage.removeItem('WPaccessToken');
     setWPaccessToken("")
+  }
+  const sendSiteURL = async () => {
+    const payload = {
+      siteURL:siteURL
+    };
+  
+    const response = await GPTService.saveWPSiteUrl(JSON.stringify(payload));
+    console.log(response)
   }
   useEffect(() => {
     if (WPaccessToken) {
@@ -295,10 +308,21 @@ return (
                 label="Enter your site url"
                 multiline
                 rows={1}
-                sx={{ width: "40%", ml: 2 }} // Adjust width here as per your needs
+                sx={{ width: "50%", ml: 2 ,pr:1}} // Adjust width here as per your needs
                 value={siteURL}
                 onChange={event => setsiteURL(event.target.value)}
               />
+               <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+               
+                  style={{ width: '100px' }}
+                  onClick={sendSiteURL}
+                >
+                  Save
+                </MDButton>
             </MDBox>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                 <img src={infinigptlogo} alt="Logo" style={{ height: '50px', width: '50px' }} />

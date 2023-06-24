@@ -21,9 +21,17 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 async function generateAdvancedBlogPost(topic,req) {
+
+  let userPrompt = req.body.advancedSettings.advancedPromptInput;
+  let searchValue = /\{topic\}/gi; // 'gi' for global and case insensitive
+let replaceValue = topic;
+console.log(userPrompt)
+ userPrompt = userPrompt.replace(searchValue, replaceValue);
+ console.log(userPrompt)
 const completion = await openai.createChatCompletion({
+ 
     model: "gpt-4",
-    messages: [{ "role": "system", "content": "you are ai blog post generator" }, { "role": "user", "content": `Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: ${topic} in the style of an expert with 15 years of experience without explicitly mentioning this`  }],
+    messages: [{ "role": "system", "content": "you are ai blog post generator" }, { "role": "user", "content": userPrompt  }],
 
     max_tokens: req.body.advancedSettings.maxTokens,
     n: 1,
@@ -56,8 +64,65 @@ function extractTextBetweenDoubleBrackets(text) {
   }
   
 
+router.post('/saveSiteUrl', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        let userId = req.headers.userid;
 
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Fetch the user
+        const user = await userModel.findOne({ _id: userId });
+
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        let wordpressSiteUrl=req.body.siteURL
+        const userUpdated = await userModel.findOneAndUpdate({ _id: userId }, { $set: { wordpressSiteUrl: wordpressSiteUrl } }, { new: true, upsert: true });
+        // Send the response
+        res.status(200).send('success')
+        console.log(userUpdated.wordpressSiteUrl)
+    } catch (error) {
+        // Log the error for debugging
+        console.error(error);
+        
+        // Send error response
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
   
+
+router.post('/fetch-WPSiteURL', passport.authenticate('jwt', {session: false}), async (req, res) => {
+  try {
+      let userId = req.headers.userid;
+
+      // Validate userId
+      if (!userId) {
+          return res.status(400).json({ message: 'User ID is required' });
+      }
+
+      // Fetch the user
+      const user = await userModel.findOne({ _id: userId });
+
+      // Check if user exists
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Send the response
+      res.json({WPSiteURL:user.wordpressSiteUrl});
+      console.log(user.wordpressSiteUrl)
+  } catch (error) {
+      // Log the error for debugging
+      console.error(error);
+      
+      // Send error response
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
 router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false }), async (req, res) => {
     
     const topics = req.body.prompt.split("\n");

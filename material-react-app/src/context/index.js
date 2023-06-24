@@ -61,9 +61,40 @@ export const MusicKitProvider = ({ children }) => {
     </MusicKitContext.Provider>
   );
 };
+
+export const WPSiteURLContext=createContext();
+export const WPSiteURLProvider = ({ children }) => {
+  const [WPSiteURL, setWPSiteURL] = useState("");
+  const authContext = useContext(AuthContext);
+  const { isAuthenticated } = authContext;
+
+   useEffect(() => {
+    const fetchWPSiteURL = async () => {
+      try {
+        const response = await GPTService.fetchWPSiteUrl();
+        console.log(response);
+        if (response) {
+          setWPSiteURL(response.WPSiteURL);
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle your error properly
+      }
+    };
+
+    fetchWPSiteURL();
+  }, [isAuthenticated]);
+  return (
+    <WPSiteURLContext.Provider value={{ WPSiteURL, setWPSiteURL }}>
+      {children}
+    </WPSiteURLContext.Provider>
+  );
+};
 export const ApiUsageContext=createContext();
 export const ApiUsageProvider = ({ children }) => {
   const [apiUsage, setApiUsage] = useState(0);
+  const authContext = useContext(AuthContext);
+  const { isAuthenticated } = authContext;
 
    useEffect(() => {
     const fetchAPIUsage = async () => {
@@ -80,7 +111,7 @@ export const ApiUsageProvider = ({ children }) => {
     };
 
     fetchAPIUsage();
-  }, []);
+  }, [isAuthenticated]);
   return (
     <ApiUsageContext.Provider value={{ apiUsage, setApiUsage }}>
       {children}

@@ -22,11 +22,12 @@ import { AuthContextProvider } from "context";
 
 // GPT Toolkit React Context Provider
 import { MaterialUIControllerProvider } from "context";
-import { MusicKitProvider,ApiUsageProvider } from "context";
+import { MusicKitProvider,ApiUsageProvider,WPSiteURLProvider } from "context";
 
 ReactDOM.render(
   <BrowserRouter>
     <AuthContextProvider>
+      <WPSiteURLProvider>
       <ApiUsageProvider>
       <MusicKitProvider>
       <MaterialUIControllerProvider>
@@ -34,6 +35,7 @@ ReactDOM.render(
       </MaterialUIControllerProvider>
       </MusicKitProvider>
       </ApiUsageProvider>
+      </WPSiteURLProvider>
     </AuthContextProvider>
   </BrowserRouter>,
   document.getElementById("root")

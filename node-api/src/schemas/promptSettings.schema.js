@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const promptSettingSchema = new mongoose.Schema({
   name: { required: true, type: String },
   email: { required: true, type: String },
   email_verified_at: { type: Date },
@@ -10,13 +10,8 @@ const userSchema = new mongoose.Schema({
   updated_at: { type: Date },
   wordpressAccessToken: { type: String },
   apiUsage: { type: Number },
-  wordpressSiteUrl:{type:String}
 });
 
-userSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
+promptSettingSchema.set("toJSON", { virtuals: true });
 
-userSchema.set("toJSON", { virtuals: true });
-
-export const userModel = mongoose.model("User", userSchema);
+export const promptSettingModel = mongoose.model("PromptSetting", promptSettingSchema);
