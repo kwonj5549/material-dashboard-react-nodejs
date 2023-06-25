@@ -71,11 +71,15 @@ export const registerRouteHandler = async (req, res, name, email, password) => {
     name: name,
     email: email,
     password: hashPassword,
-    apiUsage: 0
   });
   await newUser.save();
  
-  
+  const newAPIUser = new apiUsageHistory({
+    _id: userId,
+    apiUsage:0,
+
+  });
+  await newAPIUser.save();
 
   // Generate JWT token
   const token = jwt.sign({ id: newUser.id, email: newUser.email,name:newUser.name, apiUsage:newUser.apiUsage}, process.env.JWT_SECRET, {

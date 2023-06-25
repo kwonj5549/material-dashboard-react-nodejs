@@ -5,7 +5,7 @@ import passport from "passport";
 
 
 const router = express.Router();
-
+import { apiUsageHistory } from "../../schemas/apiUsageHistory.schema";
 
 // Middleware to parse JSON bodies
 router.use(express.json());
@@ -131,10 +131,12 @@ router.post('/generate-Wordpress', passport.authenticate('jwt', { session: false
   const user = await userModel.findOne({ _id: WPuserId });
   console.log(user)
   const WP_AUTH_TOKEN = user.wordpressAccessToken
+
 const WP_API_URL = req.body.siteURL
 console.log(WP_AUTH_TOKEN)
-let userAPIUsage = user.apiUsage;
 
+let cost = 0;
+const date = new Date();
     const tasks = topics.map(async topic => {
       let completion;
  
@@ -145,10 +147,11 @@ let userAPIUsage = user.apiUsage;
       } else {
         completion = await generateBasicBlogPost(topic);
       }
-      userAPIUsage = userAPIUsage + (completion.data.usage.prompt_tokens/1000)*0.03+(completion.data.usage.completion_tokens/1000)*0.06;
+     
+      cost = cost + (completion.data.usage.prompt_tokens/1000)*0.03+(completion.data.usage.completion_tokens/1000)*0.06;
       console.log(completion.data.choices[0].message.content);
       const generatedText = completion.data.choices[0].message.content;
-  
+
       // Extract title and content
       const title = extractTextBetweenDoubleBrackets(generatedText);
       const content = generatedText.replace(/\[\[(.*?)\]\]/, "").replace(/content:/gi, "").trim(); // Remove the title and "content:" from the content // Remove the title from the content
@@ -188,10 +191,21 @@ let userAPIUsage = user.apiUsage;
       }
     });
     // Send the generations back as the response
-    await userModel.findOneAndUpdate({ _id: WPuserId }, { $set: { apiUsage: userAPIUsage } }, { new: true, upsert: true });
+    await apiUsageHistory.findOneAndUpdate({ _id: WPuserId }, { $inc: { apiUsage: cost } }, { new: true, upsert: true });
+    
+    const userAPILog = await apiUsageHistory.findOne({ _id: WPuserId });
+
+// Update the usage history
+userAPILog.usageHistory.push({
+    apiUsage: cost,
+    timestamp: date,
+    service:"wordpressgpt"
+});
+
+await userAPILog.save();
     res.send({
       generations,
-      apiUsage: userAPIUsage,
+      apiUsage: userAPILog.apiUsage,
     });
   });
   import OAuth2Strategy from 'passport-oauth2';

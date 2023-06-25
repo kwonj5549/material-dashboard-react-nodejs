@@ -11,6 +11,7 @@ router.use(express.json());
 
 import { Configuration, OpenAIApi } from "openai";
 import { userModel } from "../../schemas/user.schema";
+import { apiUsageHistory } from "../../schemas/apiUsageHistory.schema";
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -107,16 +108,22 @@ router.get('/fetch-apiUsage', passport.authenticate('jwt', {session: false}), as
         }
 
         // Fetch the user
-        const user = await userModel.findOne({ _id: userId });
-
-        // Check if user exists
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        const userAPI = await apiUsageHistory.findOne({ _id: userId });
+        if(userAPI){
+            res.json({apiUsage:userAPI.apiUsage});
+        }else{
+            const newAPIUser = new apiUsageHistory({
+                _id: userId,
+                apiUsage:0,
+                usageHistory: {},
+              });
+              await newAPIUser.save();
+              res.json({apiUsage:0});
         }
-
+        // Check if user exists
+      
         // Send the response
-        res.json({apiUsage:user.apiUsage});
-        console.log(user.apiUsage)
+       
     } catch (error) {
         // Log the error for debugging
         console.error(error);
@@ -128,7 +135,7 @@ router.get('/fetch-apiUsage', passport.authenticate('jwt', {session: false}), as
 
 router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false}), async (req, res) => {
     const sysprompt = "you are AI playlist generator";
-
+    const date = new Date();
     const userprompt = req.body.prompt || '';
     const appleMusicUserToken = req.body.musicUserToken
     console.log(sysprompt)
@@ -161,13 +168,23 @@ router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false})
 }
 let userId = req.headers.userid
 
-const user = await userModel.findOne({ _id: userId });
+
 
 let cost = 0;
 cost = cost + (completion.data.usage.prompt_tokens/1000)*0.03+(completion.data.usage.completion_tokens/1000)*0.06;
 
-let userAPIUsage = user.apiUsage + cost
-await userModel.findOneAndUpdate({ _id: userId }, { $set: { apiUsage: userAPIUsage } }, { new: true, upsert: true });
+
+await apiUsageHistory.findOneAndUpdate({ _id: userId }, { $inc: { apiUsage: cost } }, { new: true, upsert: true });
+const userAPILog = await apiUsageHistory.findOne({ _id: userId });
+
+// Update the usage history
+userAPILog.usageHistory.push({
+    apiUsage: cost,
+    timestamp: date,
+    service:"applemusicgpt"
+});
+
+await userAPILog.save();
 console.log(cost)
 
     console.log(completion.data.choices[0].message.content);
@@ -230,7 +247,7 @@ console.log(cost)
     }
     res.send({
         playlist,
-        apiUsage: userAPIUsage,
+        apiUsage: userAPILog.apiUsage,
       });
     const trackIds = playlist.songs.map(song => song.trackid);
     if (trackIds.length > 0) {

@@ -109,8 +109,9 @@ export const ApiUsageProvider = ({ children }) => {
         // Handle your error properly
       }
     };
-
+if(isAuthenticated){
     fetchAPIUsage();
+}
   }, [isAuthenticated]);
   return (
     <ApiUsageContext.Provider value={{ apiUsage, setApiUsage }}>
