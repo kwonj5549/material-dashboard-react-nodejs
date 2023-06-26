@@ -70,8 +70,9 @@ const useBlurStyles = makeStyles((theme) => ({
 
 }));
 import Typography from '@mui/material/Typography';
+import { upload } from "@testing-library/user-event/dist/upload";
 function AppleMusicGPT() {
-  const { apiUsage, setApiUsage,apiUsageisLoading  } = useContext(ApiUsageContext);
+  const { apiUsage, setApiUsage, apiUsageisLoading } = useContext(ApiUsageContext);
   const classes = useStyles();
   const classesblur = useBlurStyles();
   const [input, setInput] = useState("");
@@ -83,7 +84,7 @@ function AppleMusicGPT() {
   const openAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeAppleMusicGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
-
+  const [selectedRows, setSelectedRows] = useState([]);
   const openAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(true);
   const closeAppleMusicGPTSnackbarUnauth = () => setSnackbarUnauthOpen(false);
   const [ppenvalue, setppenValue] = useState(.35);
@@ -92,6 +93,8 @@ function AppleMusicGPT() {
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
   const [autosend, setAutosend] = useState(true);
+const[uploadStatus,setUploadStatus]=useState(false)
+  const [customPlaylistName, setCustomPlaylistName] = useState("")
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -124,18 +127,18 @@ function AppleMusicGPT() {
   const handleMaxTokenSliderChange = (event, newValue) => {
     setMaxTokenValue(newValue);
   };
-  useEffect(async()=>{
+  useEffect(async () => {
     const settings = await GPTService.fetchCustomSettings()
     const customAppleMusicSettings = settings.userSettings.appleMusicSettings
-  
-  setppenValue(customAppleMusicSettings.presence_penalty)
+
+    setppenValue(customAppleMusicSettings.presence_penalty)
     setfpenValue(customAppleMusicSettings.frequency_penalty)
     setTempValue(customAppleMusicSettings.temperature)
     setMaxTokenValue(customAppleMusicSettings.max_tokens)
-  setadvancedPromptInput(customAppleMusicSettings.customPrompt)
-     setAutosend(customAppleMusicSettings.autosend)
+    setadvancedPromptInput(customAppleMusicSettings.customPrompt)
+    setAutosend(customAppleMusicSettings.autosend)
 
-  },[])
+  }, [])
   const setSettingsDefault = async () => {
 
     setadvancedPromptInput("make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist")
@@ -143,26 +146,26 @@ function AppleMusicGPT() {
     setTempValue(0.7)
     setMaxTokenValue(4000)
     setppenValue(0.35)
-     setAutosend(true)
+    setAutosend(true)
   }
-  
-const SaveSettings = async () => {
-  const payload = {
-    service: "applemusicGPT",
-    appleMusicSettings:{
-      customPrompt:advancedPromptInput,
-      autosend:autosend,
-      max_tokens:maxtokenvalue,
-      temperature:tempvalue,
-      frequency_penalty:fpenvalue,
-      presence_penalty:ppenvalue,
-    }
-    
-  };
-  
-  
+
+  const SaveSettings = async () => {
+    const payload = {
+      service: "applemusicGPT",
+      appleMusicSettings: {
+        customPrompt: advancedPromptInput,
+        autosend: autosend,
+        max_tokens: maxtokenvalue,
+        temperature: tempvalue,
+        frequency_penalty: fpenvalue,
+        presence_penalty: ppenvalue,
+      }
+
+    };
+
+
     const response = await GPTService.saveCustomSettings(JSON.stringify(payload));
-  
+
   }
   const renderSuccessSnackbar = (
     <MDSnackbar
@@ -220,9 +223,15 @@ const SaveSettings = async () => {
     } else {
       setLinkState(false);
     }
-}, [music?.musicUserToken]);
-
-  const sendData = async () => {
+  }, [music?.musicUserToken]);
+  const handleSendGeneration = async () => {
+    if((tabvalue==1)&&(autosend==false)){
+      generateData()
+    }else{
+    sendAndGenerate()
+    }
+  };
+  const sendAndGenerate = async () => {
     setIsLoading(true);
 
     const advancedSettings = {
@@ -232,21 +241,28 @@ const SaveSettings = async () => {
       maxTokens: maxtokenvalue,
       temperature: tempvalue
     };
-    
+
     const payload = {
       prompt: input,
-      musicUserToken: music.musicUserToken, 
-      useAdvancedSettings: tabvalue, 
-      advancedSettings:advancedSettings
+      musicUserToken: music.musicUserToken,
+      useAdvancedSettings: tabvalue,
+      advancedSettings: advancedSettings,
+      customPlaylistName: customPlaylistName
     };
 
     try {
 
-      const response = await GPTService.generateAppleMusic(JSON.stringify(payload));
-      
-console.log(response)
-setApiUsage(response.apiUsage)
-      setResponseData(response.playlist); // Do something with the response
+      const response = await GPTService.generateandsendAppleMusic(JSON.stringify(payload));
+
+      console.log(response)
+      setApiUsage(response.apiUsage)
+      setResponseData(response.playlist);
+      if(response.autosend==false){
+        setUploadStatus(true)
+      } else{
+        setUploadStatus(false)
+      }
+      // Do something with the response
       openAppleMusicGPTSnackbarSuccess();
       setInput("");
 
@@ -259,7 +275,54 @@ setApiUsage(response.apiUsage)
 
   };
 
+  const generateData = async () => {
+    setIsLoading(true);
 
+    const advancedSettings = {
+      advancedPromptInput: advancedPromptInput,
+      frequencyPenalty: fpenvalue,
+      presencePenalty: ppenvalue,
+      maxTokens: maxtokenvalue,
+      temperature: tempvalue
+    };
+
+    const payload = {
+      prompt: input,
+      musicUserToken: music.musicUserToken,
+      useAdvancedSettings: tabvalue,
+      advancedSettings: advancedSettings,
+      customPlaylistName: customPlaylistName
+    };
+
+    try {
+
+      const response = await GPTService.generateAppleMusic(JSON.stringify(payload));
+
+      console.log(response)
+      setApiUsage(response.apiUsage)
+      setResponseData(response.playlist);
+      if(response.autosend==false){
+        setUploadStatus(true)
+      } else{
+        setUploadStatus(false)
+      } // Do something with the response
+      // openAppleMusicGPTSnackbarSuccess();
+      setInput("");
+      
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+
+
+  };
+  const deleteRows = () => {
+    const newData = rows.filter((row) => !selectedRows.includes(row.id));
+    setRows(newData);
+    setSelectedRows([]);
+  };
   const columns = [
     { field: 'song', headerName: 'Song Name', width: 250 },
     { field: 'artist', headerName: 'Artist', width: 250 },
@@ -293,18 +356,18 @@ setApiUsage(response.apiUsage)
                 pl: 0
               }}
             >
-                <MDBox sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'left', p: 2,pl:0 }}>
-              <Typography sx={{pr:2}}variant="h2" align="left">Apple Music GPT</Typography>
-           
-              
+              <MDBox sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'left', p: 2, pl: 0 }}>
+                <Typography sx={{ pr: 2 }} variant="h2" align="left">Apple Music GPT</Typography>
 
-                  <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
-                    <Tab label="Basic" />
-                    <Tab label="Advanced" />
-                    <Tab label="History" />
-                  </Tabs>
-                </MDBox>
-      
+
+
+                <Tabs value={tabvalue} onChange={handleTabChange} aria-label="simple tabs example">
+                  <Tab label="Basic" />
+                  <Tab label="Advanced" />
+                  <Tab label="History" />
+                </Tabs>
+              </MDBox>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                 <img src={infinigptlogo} alt="Logo" style={{ height: '50px', width: '50px' }} />
                 {linkState ? <LinkIcon fontSize="large" style={{ color: '#00b0ff' }} /> : <LinkOffIcon fontSize="large" style={{ color: 'red' }} />}
@@ -336,7 +399,7 @@ setApiUsage(response.apiUsage)
               className={classes.input}
               label="Enter Your Prompt"
               multiline
-              rows={5}
+              rows={6}
               fullWidth
               value={input}
               onChange={event => setInput(event.target.value)}
@@ -345,21 +408,63 @@ setApiUsage(response.apiUsage)
           </Grid>
           <Grid item xs={3}>
             <MDBox>
+              <MDInput
+                className={classes.input}
+                label="Enter custom Playlist name"
+                multiline
+                rows={1}
+                fullWidth
+                value={customPlaylistName}
+                onChange={event => setCustomPlaylistName(event.target.value)}
+                sx={{ mb: 1 }}
+              />
               <MDButton
                 variant="gradient"
                 color="info"
                 fullWidth
                 type="button"
-                onClick={linkState ? sendData : openAppleMusicGPTSnackbarUnauth}
+                onClick={linkState ? handleSendGeneration : openAppleMusicGPTSnackbarUnauth}
+                sx={{ mb: 1 }}
               >
                 Generate
               </MDButton>
+              {uploadStatus==true &&
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  onClick={linkState ? sendAndGenerate : openAppleMusicGPTSnackbarUnauth}
+                >
+                  Add New Prompt
+                </MDButton>
+              }
             </MDBox>
           </Grid>
           <Grid item xs={7}>
 
             <MDBox mt={5} sx={{ boxShadow: theme.shadows[3], display: 'flex', flexDirection: 'column', width: '100%', height: response ? '450px' : '80px', borderRadius: '10px', backgroundColor: '#ffffff', overflow: 'auto' }} p={2}>
-              <Typography variant="h2" align="left">Response</Typography>
+            <MDBox display='flex' alignItems='center' justifyContent='space-between'>
+  <Typography variant="h2" align="left">Response</Typography>
+ { response &&  <MDButton
+  variant="gradient"
+  color="info"
+  type="button"
+  onClick={deleteRows}
+>
+  Delete Selected Rows
+</MDButton>}
+  {uploadStatus == true &&
+    <MDButton
+      variant="gradient"
+      color="info"
+      type="button"
+      onClick={linkState ? sendAndGenerate : openAppleMusicGPTSnackbarUnauth}
+    >
+      Upload
+    </MDButton>
+  }
+</MDBox>
               {response && (
                 <ThemeProvider theme={theme}>
                   <DataGrid
@@ -374,13 +479,16 @@ setApiUsage(response.apiUsage)
                     }}
                     pageSizeOptions={[5, 10]}
                     checkboxSelection
+                    onSelectionModelChange={(newSelection) => {
+                      setSelectedRows(newSelection.selectionModel);
+                    }}
                   />
                 </ThemeProvider>
               )}
             </MDBox>
           </Grid>
           <Grid item xs={5}>
-           {tabvalue == 1 && <MDBox
+            {tabvalue == 1 && <MDBox
               sx={{
                 p: 2,
                 mt: 5, // Add top margin
@@ -395,41 +503,41 @@ setApiUsage(response.apiUsage)
                 // Reduced gap for dividers
               }}
             >
-             
+
               <Typography variant="h2" align="left">Advanced</Typography>
               <Divider />  {/* Divider line */}
-              <MDBox 
-  sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'flex-start' 
-  }}
->
-              <Typography variant="h6">Prompt:</Typography>
-              <MDInput
-                className={classes.input}
-                label="Enter the default prompt that goes after the user prompt"
-                multiline
-                rows={2}
-                fullWidth
-                value={advancedPromptInput}
-                onChange={event => setadvancedPromptInput(event.target.value)}
-              />
+              <MDBox
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <Typography variant="h6">Prompt:</Typography>
+                <MDInput
+                  className={classes.input}
+                  label="Enter the default prompt that goes after the user prompt"
+                  multiline
+                  rows={2}
+                  fullWidth
+                  value={advancedPromptInput}
+                  onChange={event => setadvancedPromptInput(event.target.value)}
+                />
               </MDBox>
               <Divider />  {/* Divider line */}
-              <MDBox 
-  sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'flex-start' 
-  }}
->
-              <Typography variant="h6">Autosend:</Typography>
-              <MDBox mt={0.5}>
-            <Switch checked={autosend} onChange={() => setAutosend(!autosend)} />
-          </MDBox>
+              <MDBox
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <Typography variant="h6">Autosend:</Typography>
+                <MDBox mt={0.5}>
+                  <Switch checked={autosend} onChange={() => setAutosend(!autosend)} />
+                </MDBox>
               </MDBox>
-              <Divider /> 
+              <Divider />
 
               <Grid container direction="row" alignItems="center" spacing={2}>
                 <Grid item xs={3}>
@@ -549,30 +657,30 @@ setApiUsage(response.apiUsage)
               </Grid>
               <Divider />  {/* Divider line */}
               <Grid container direction="row" alignItems="center" spacing={2}>
-                
+
                 <Grid item xs={6}>
-                <MDButton
-                  variant="gradient"
-                  color="info"
-                  fullWidth
-                  type="button"
-                  style={{ width: '100%' }}
-                  onClick={SaveSettings}
-                >
-                  Save
-                </MDButton>
+                  <MDButton
+                    variant="gradient"
+                    color="info"
+                    fullWidth
+                    type="button"
+                    style={{ width: '100%' }}
+                    onClick={SaveSettings}
+                  >
+                    Save
+                  </MDButton>
                 </Grid>
                 <Grid item xs={6}>
-                <MDButton
-                  variant="gradient"
-                  color="info"
-                  fullWidth
-                  type="button"
-                  style={{ width: '100%' }}
-                  onClick={setSettingsDefault}
-                >
-                  Reset to Defaults
-                </MDButton>
+                  <MDButton
+                    variant="gradient"
+                    color="info"
+                    fullWidth
+                    type="button"
+                    style={{ width: '100%' }}
+                    onClick={setSettingsDefault}
+                  >
+                    Reset to Defaults
+                  </MDButton>
                 </Grid>
               </Grid>
             </MDBox>}
