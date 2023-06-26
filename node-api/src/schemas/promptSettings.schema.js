@@ -1,15 +1,9 @@
 import mongoose from "mongoose";
 
 const promptSettingSchema = new mongoose.Schema({
-  name: { required: true, type: String },
-  email: { required: true, type: String },
-  email_verified_at: { type: Date },
-  password: { required: true, type: String },
-  profile_image: { type: String },
-  created_at: { type: Date },
-  updated_at: { type: Date },
-  wordpressAccessToken: { type: String },
-  apiUsage: { type: Number },
+  wordpressSettings: {type: Object },
+  appleMusicSettings: {type: Object },
+_id:{required:true, type:String}
 });
 
 promptSettingSchema.set("toJSON", { virtuals: true });

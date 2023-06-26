@@ -16,6 +16,7 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import GPTService from 'services/gpt-service';
 import Stack from '@mui/material/Stack';
+import Switch from "@mui/material/Switch";
 import MDSnackbar from "components/MDSnackbar";
 import { DataGrid } from '@mui/x-data-grid';
 import { createContext, useContext } from "react";
@@ -82,7 +83,7 @@ function WordpressGPT() {
   const [linkState, setLinkState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[\"title\"]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: {topic} in the style of an expert with 15 years of experience without explicitly mentioning this");
+  const [advancedPromptInput, setadvancedPromptInput] = useState("Write a blog post with the concise and appealing title inside double brackets like this [[title]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: {topic} in the style of an expert with 15 years of experience without explicitly mentioning this");
   const openWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(true);
   const closeWordpressGPTSnackbarSuccess = () => setSnackbarSuccessOpen(false);
   const [snackbarUnauthOpen, setSnackbarUnauthOpen] = useState(false);
@@ -96,9 +97,9 @@ function WordpressGPT() {
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
   const [siteURL, setsiteURL] = useState("");
-  const [WPusername, setWPusernameInput] = useState("kwill5800");
   const [accessToken, setAccessToken] = useState("");
  const [WPaccessToken, setWPaccessToken] = useState("")
+ const [autosend, setAutosend] = useState(true);
  const CLIENT_ID="87833"
 const CLIENT_SECRET="vnWsWAvLBzvb3j40QBQQFQtIFnqzSc7jtlA4ltSpSOC4TXot1B3FUDecfZbumw7r"
 const REDIRECT_URI="http://localhost:8080/auth/wordpress/callback"
@@ -138,6 +139,18 @@ useEffect(()=>{
   setsiteURL(WPSiteURL);
 
 },[WPSiteURL]);
+useEffect(async()=>{
+  const settings = await GPTService.fetchCustomSettings()
+  const customWordpressSettings = settings.userSettings.wordpressSettings
+
+setppenValue(customWordpressSettings.presence_penalty)
+  setfpenValue(customWordpressSettings.frequency_penalty)
+  setTempValue(customWordpressSettings.temperature)
+  setMaxTokenValue(customWordpressSettings.max_tokens)
+setadvancedPromptInput(customWordpressSettings.customPrompt)
+   setAutosend(customWordpressSettings.autosend)
+
+},[])
   useEffect(() => {
     // Parse the authorization code from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -222,7 +235,34 @@ useEffect(()=>{
       setLinkState(false);
     }
 }, [WPaccessToken]);
+const setSettingsDefault = async () => {
 
+  setadvancedPromptInput("Write a blog post with the concise and appealing title inside double brackets like this [[title]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: {topic} in the style of an expert with 15 years of experience without explicitly mentioning this")
+  setfpenValue(0.35)
+  setTempValue(0.7)
+  setMaxTokenValue(4000)
+  setppenValue(0.35)
+   setAutosend(true)
+}
+
+const SaveSettings = async () => {
+const payload = {
+  service: "wordpressGPT",
+  wordpressSettings:{
+    customPrompt:advancedPromptInput,
+    autosend:autosend,
+    max_tokens:maxtokenvalue,
+    temperature:tempvalue,
+    frequency_penalty:fpenvalue,
+    presence_penalty:ppenvalue,
+  }
+  
+};
+
+
+  const response = await GPTService.saveCustomSettings(JSON.stringify(payload));
+
+}
 const sendData = async () => {
   setIsLoading(true);
 
@@ -363,12 +403,13 @@ return (
             />
           </Grid>
           <Grid item xs={3}>
-            <MDBox>
+            <MDBox sx={{height:"100%"}}>
               <MDButton
                 variant="gradient"
                 color="info"
                 fullWidth
                 type="button"
+                sx={{height:"100%"}}
                 onClick={linkState ? sendData : openWordpressGPTSnackbarUnauth}
               >
                 Generate
@@ -434,7 +475,7 @@ return (
                 p: 2,
                 mt: 5, // Add top margin
                 width: '100%',
-                height: '600px', // Set fixed height
+                height: '650px', // Set fixed height
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 boxShadow: theme.shadows[3],
@@ -458,7 +499,7 @@ return (
                 className={classes.input}
                 label="Enter the default prompt that goes after the user prompt"
                 multiline
-                rows={2}
+                rows={3}
                 fullWidth
                 value={advancedPromptInput}
                 onChange={event => setadvancedPromptInput(event.target.value)}
@@ -472,16 +513,10 @@ return (
     justifyContent: 'flex-start' 
   }}
 >
-              <Typography variant="h6">WP Username:</Typography>
-              <MDInput
-                className={classes.input}
-                label="Enter your username"
-                multiline
-                rows={1}
-                sx={{ width:"40%"}}
-                value={WPusername}
-                onChange={event => setWPusernameInput(event.target.value)}
-              />
+              <Typography variant="h6">Autosend:</Typography>
+              <MDBox mt={0.5}>
+            <Switch checked={autosend} onChange={() => setAutosend(!autosend)} />
+          </MDBox>
               </MDBox>
               <Divider /> 
             
@@ -599,6 +634,34 @@ return (
                     step={1}
                     aria-label="Slider for Max Tokens"
                   />
+                </Grid>
+              </Grid>
+              <Divider />  {/* Divider line */}
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                
+                <Grid item xs={6}>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  style={{ width: '100%' }}
+                  onClick={SaveSettings}
+                >
+                  Save
+                </MDButton>
+                </Grid>
+                <Grid item xs={6}>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  style={{ width: '100%' }}
+                  onClick={setSettingsDefault}
+                >
+                  Reset to Defaults
+                </MDButton>
                 </Grid>
               </Grid>
             </MDBox>}

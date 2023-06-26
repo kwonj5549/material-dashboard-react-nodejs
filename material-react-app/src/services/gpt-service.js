@@ -37,7 +37,15 @@ class GPTService {
     const fetchWPSiteUrl = 'fetch-WPSiteURL';
     return await HttpService.post(fetchWPSiteUrl, payload);
   };
- 
+  fetchCustomSettings = async (payload) => {
+    const fetchCustomSettings = 'fetch-settings';
+    return await HttpService.get(fetchCustomSettings, payload);
+  };
+
+  saveCustomSettings = async (payload) => {
+    const saveCustomSettings = 'save-settings';
+    return await HttpService.post(saveCustomSettings, payload);
+  };
 }
 
 export default new GPTService();

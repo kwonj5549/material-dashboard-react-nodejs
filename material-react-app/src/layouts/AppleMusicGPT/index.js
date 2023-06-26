@@ -32,7 +32,7 @@ import Slider from "@mui/material/Slider";
 import Divider from "@mui/material/Divider";
 import { ApiUsageContext } from 'context/index.js';
 
-  
+import Switch from "@mui/material/Switch";
 import { AppBar, Tabs, Tab } from '@mui/material';
 // Create a custom theme
 const theme = createTheme({
@@ -91,7 +91,7 @@ function AppleMusicGPT() {
   const [tempvalue, setTempValue] = useState(.7);
   const [maxtokenvalue, setMaxTokenValue] = useState(4000);
   const [tabvalue, setTabValue] = useState(0);
-
+  const [autosend, setAutosend] = useState(true);
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -124,7 +124,46 @@ function AppleMusicGPT() {
   const handleMaxTokenSliderChange = (event, newValue) => {
     setMaxTokenValue(newValue);
   };
+  useEffect(async()=>{
+    const settings = await GPTService.fetchCustomSettings()
+    const customAppleMusicSettings = settings.userSettings.appleMusicSettings
+  
+  setppenValue(customAppleMusicSettings.presence_penalty)
+    setfpenValue(customAppleMusicSettings.frequency_penalty)
+    setTempValue(customAppleMusicSettings.temperature)
+    setMaxTokenValue(customAppleMusicSettings.max_tokens)
+  setadvancedPromptInput(customAppleMusicSettings.customPrompt)
+     setAutosend(customAppleMusicSettings.autosend)
 
+  },[])
+  const setSettingsDefault = async () => {
+
+    setadvancedPromptInput("make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist")
+    setfpenValue(0)
+    setTempValue(0.7)
+    setMaxTokenValue(4000)
+    setppenValue(0.35)
+     setAutosend(true)
+  }
+  
+const SaveSettings = async () => {
+  const payload = {
+    service: "applemusicGPT",
+    appleMusicSettings:{
+      customPrompt:advancedPromptInput,
+      autosend:autosend,
+      max_tokens:maxtokenvalue,
+      temperature:tempvalue,
+      frequency_penalty:fpenvalue,
+      presence_penalty:ppenvalue,
+    }
+    
+  };
+  
+  
+    const response = await GPTService.saveCustomSettings(JSON.stringify(payload));
+  
+  }
   const renderSuccessSnackbar = (
     <MDSnackbar
       color="success"
@@ -346,7 +385,7 @@ setApiUsage(response.apiUsage)
                 p: 2,
                 mt: 5, // Add top margin
                 width: '100%',
-                height: '600px', // Set fixed height
+                height: '630px', // Set fixed height
                 borderRadius: '10px',
                 backgroundColor: '#ffffff',
                 boxShadow: theme.shadows[3],
@@ -378,7 +417,19 @@ setApiUsage(response.apiUsage)
               />
               </MDBox>
               <Divider />  {/* Divider line */}
-
+              <MDBox 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'flex-start' 
+  }}
+>
+              <Typography variant="h6">Autosend:</Typography>
+              <MDBox mt={0.5}>
+            <Switch checked={autosend} onChange={() => setAutosend(!autosend)} />
+          </MDBox>
+              </MDBox>
+              <Divider /> 
 
               <Grid container direction="row" alignItems="center" spacing={2}>
                 <Grid item xs={3}>
@@ -494,6 +545,34 @@ setApiUsage(response.apiUsage)
                     step={1}
                     aria-label="Slider for Max Tokens"
                   />
+                </Grid>
+              </Grid>
+              <Divider />  {/* Divider line */}
+              <Grid container direction="row" alignItems="center" spacing={2}>
+                
+                <Grid item xs={6}>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  style={{ width: '100%' }}
+                  onClick={SaveSettings}
+                >
+                  Save
+                </MDButton>
+                </Grid>
+                <Grid item xs={6}>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  style={{ width: '100%' }}
+                  onClick={setSettingsDefault}
+                >
+                  Reset to Defaults
+                </MDButton>
                 </Grid>
               </Grid>
             </MDBox>}

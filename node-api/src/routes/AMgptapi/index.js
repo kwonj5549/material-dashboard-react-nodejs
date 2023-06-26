@@ -12,6 +12,7 @@ router.use(express.json());
 import { Configuration, OpenAIApi } from "openai";
 import { userModel } from "../../schemas/user.schema";
 import { apiUsageHistory } from "../../schemas/apiUsageHistory.schema";
+import { promptSettingModel } from "../../schemas/promptSettings.schema";
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -98,40 +99,6 @@ async function createPlaylistWithSongs(playlistName,trackIds,userToken) {
   
 
 }
-router.get('/fetch-apiUsage', passport.authenticate('jwt', {session: false}), async (req, res) => {
-    try {
-        let userId = req.headers.userid;
-
-        // Validate userId
-        if (!userId) {
-            return res.status(400).json({ message: 'User ID is required' });
-        }
-
-        // Fetch the user
-        const userAPI = await apiUsageHistory.findOne({ _id: userId });
-        if(userAPI){
-            res.json({apiUsage:userAPI.apiUsage});
-        }else{
-            const newAPIUser = new apiUsageHistory({
-                _id: userId,
-                apiUsage:0,
-                usageHistory: {},
-              });
-              await newAPIUser.save();
-              res.json({apiUsage:0});
-        }
-        // Check if user exists
-      
-        // Send the response
-       
-    } catch (error) {
-        // Log the error for debugging
-        console.error(error);
-        
-        // Send error response
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 
 router.post('/generate-AppleMusic',passport.authenticate('jwt',{session: false}), async (req, res) => {
     const sysprompt = "you are AI playlist generator";
@@ -267,5 +234,138 @@ console.log(cost)
 router.post('/send-AppleMusic', async (req, res) => {
     
 });
+
+router.get('/fetch-apiUsage', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        let userId = req.headers.userid;
+
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Fetch the user
+        const userAPI = await apiUsageHistory.findOne({ _id: userId });
+        if(userAPI){
+            res.json({apiUsage:userAPI.apiUsage});
+        }else{
+            const newAPIUser = new apiUsageHistory({
+                _id: userId,
+                apiUsage:0,
+                usageHistory: {},
+              });
+              await newAPIUser.save();
+              res.json({apiUsage:0});
+        }
+        // Check if user exists
+      
+        // Send the response
+       
+    } catch (error) {
+        // Log the error for debugging
+        console.error(error);
+        
+        // Send error response
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+router.get('/fetch-settings', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        let userId = req.headers.userid;
+
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Fetch the user
+        const userSettings = await promptSettingModel.findOne({ _id: userId });
+        if(userSettings){
+            res.json({userSettings});
+        }else{
+            const newUserSettings = new promptSettingModel({
+                _id: userId,
+                wordpressSettings:{
+                    customPrompt:"Write a blog post with the concise and appealing title inside double brackets like this [[title]] and keep the double bracks in the output and then put a summary of the whole blog post right below in this format Summary: \"the summary of the article\" and put the content/actual blog post about the below this: {topic} in the style of an expert with 15 years of experience without explicitly mentioning this",
+                autosend:true,
+                max_tokens: 4000,
+        temperature: 0.7,
+        frequency_penalty: 0,
+        presence_penalty: 0.35
+                },
+                appleMusicSettings: {  
+                    customPrompt:"make the songs in this format 1. \"song\" by artist and add a playlist name at the end in the format PlaylistName: the name of the playlist",
+                     autosend:true,
+                    max_tokens: 4000,
+            temperature: 0.7,
+            frequency_penalty: 0,
+            presence_penalty: 0.35},
+              });
+              await newUserSettings.save();
+              const userSettingsNew = await promptSettingModel.findOne({ _id: userId });
+              res.json({userSettingsNew});
+        }
+        // Check if user exists
+      
+        // Send the response
+       
+    } catch (error) {
+        // Log the error for debugging
+        console.error(error);
+        
+        // Send error response
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+router.post('/save-settings', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        let userId = req.headers.userid;
+
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Fetch the user
+        const userSettings = await promptSettingModel.findOne({ _id: userId });
+
+        if(req.body.service=="applemusicGPT"){
+            const updatedSettings = {
+                'appleMusicSettings.customPrompt': req.body.appleMusicSettings.customPrompt || userSettings.appleMusicSettings.customPrompt,
+                'appleMusicSettings.autosend': req.body.appleMusicSettings.autosend || userSettings.appleMusicSettings.autosend,
+                'appleMusicSettings.max_tokens': req.body.appleMusicSettings.max_tokens || userSettings.appleMusicSettings.max_tokens,
+                'appleMusicSettings.temperature': req.body.appleMusicSettings.temperature || userSettings.appleMusicSettings.temperature,
+                'appleMusicSettings.frequency_penalty': req.body.appleMusicSettings.frequency_penalty || userSettings.appleMusicSettings.frequency_penalty,
+                'appleMusicSettings.presence_penalty': req.body.appleMusicSettings.presence_penalty || userSettings.appleMusicSettings.presence_penalty
+            };
+
+            await promptSettingModel.findByIdAndUpdate(userId, updatedSettings);
+            const updatedUserSettings = await promptSettingModel.findOne({ _id: userId });
+            res.json({updatedUserSettings});
+        }
+        if(req.body.service=="wordpressGPT"){
+            const updatedSettings = {
+                'wordpressSettings.customPrompt': req.body.wordpressSettings.customPrompt || userSettings.wordpressSettings.customPrompt,
+                'wordpressSettings.autosend': req.body.wordpressSettings.autosend || userSettings.wordpressSettings.autosend,
+                'wordpressSettings.max_tokens': req.body.wordpressSettings.max_tokens || userSettings.wordpressSettings.max_tokens,
+                'wordpressSettings.temperature': req.body.wordpressSettings.temperature || userSettings.wordpressSettings.temperature,
+                'wordpressSettings.frequency_penalty': req.body.wordpressSettings.frequency_penalty || userSettings.wordpressSettings.frequency_penalty,
+                'wordpressSettings.presence_penalty': req.body.wordpressSettings.presence_penalty || userSettings.wordpressSettings.presence_penalty
+            };
+
+            await promptSettingModel.findByIdAndUpdate(userId, updatedSettings);
+            const updatedUserSettings = await promptSettingModel.findOne({ _id: userId });
+            res.json({updatedUserSettings});
+        }
+    } catch (error) {
+        // Log the error for debugging
+        console.error(error);
+        
+        // Send error response
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 
 export default router;
