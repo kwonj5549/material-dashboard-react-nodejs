@@ -274,7 +274,26 @@ const[uploadStatus,setUploadStatus]=useState(false)
 
 
   };
+  const sendData = async () => {
+ 
+  const trackIDs = response.songs.filter(song => !selectedRows.includes(song.id)).map(song => song.trackid);
+  const payload = {
+    trackIDs: trackIDs,
+    musicUserToken: music.musicUserToken,
+    // include any other data requsired by your API endpoint...
+  };
 
+  try {
+
+    const sendResponse =  await GPTService.sendAppleMusic(JSON.stringify(payload));
+
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+
+  }
   const generateData = async () => {
     setIsLoading(true);
 
@@ -434,7 +453,7 @@ const[uploadStatus,setUploadStatus]=useState(false)
                   color="info"
                   fullWidth
                   type="button"
-                  onClick={linkState ? sendAndGenerate : openAppleMusicGPTSnackbarUnauth}
+                  onClick={linkState ? sendData : openAppleMusicGPTSnackbarUnauth}
                 >
                   Add New Prompt
                 </MDButton>
